@@ -41,6 +41,12 @@ It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
   $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
   ```
 
+###Modular Architecture Description:
+
+Put Image Here
+
+Put text Here
+
 ###Running a simulation for a Pouring task learned from Demonstration:
 
 
