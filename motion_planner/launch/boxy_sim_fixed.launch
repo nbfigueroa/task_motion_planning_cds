@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="plan2ctrl" pkg="motion_planner" type="motion_planner" output="screen" respawn="false">   
+	 <param name="action_mode" value="boxy_fixed" />
+	 <param name="wait_for_force" value="false" />
+	 <param name="world_frame" value="base_link" />
+	 <param name="model_base_path" value="/home/nisommer/workspace/src/tests/epfl-task-models/DoughRollingModels" />
+  </node>
+</launch>

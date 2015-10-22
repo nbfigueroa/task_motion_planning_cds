@@ -1,0 +1,20 @@
+#GOAL definition
+# primary constraints constitute the goal directed aspects of a motion
+GeometricConstraint[] primary_constraints
+# secondary are solved with lower priority and can be used for motion
+# aspects which are 'nice to have'
+GeometricConstraint[] secondary_constraints
+# monitors generating discrete events for the client
+GeometricExpressionMonitor[] monitors
+---
+#RESULT definition
+# discrete events raised by the monitors in the controller
+string[] events
+# continuous state of each constraint
+GeometricConstraintState[] states
+---
+#feedback definition
+# discrete events raised by the monitors in the controller
+string[] events
+# continuous state of each constraint
+GeometricConstraintState[] states

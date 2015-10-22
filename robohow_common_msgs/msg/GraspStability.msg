@@ -1,0 +1,2 @@
+string context_id
+float32 stability

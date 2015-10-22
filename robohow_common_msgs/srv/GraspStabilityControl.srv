@@ -1,0 +1,19 @@
+# Constants for better option handling
+int32 START=0
+int32 STOP=1
+
+# The command to perform (starting/stopping the estimation)
+int32 command
+
+# The context we are performing the estimation under. This is marking the current gripper with which we are grasping (i.e. `left_gripper', `right_gripper').
+string context_id
+
+# Information specific to the current grasp
+string task_name
+string object_id
+string estimate_type
+---
+# Result flag
+int32 FAILURE=0
+int32 SUCCESS=1
+int32 result

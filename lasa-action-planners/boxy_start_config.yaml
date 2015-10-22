@@ -1,0 +1,33 @@
+joints:
+  name:
+    - right_arm_0_joint
+    - right_arm_1_joint
+    - right_arm_2_joint
+    - right_arm_3_joint
+    - right_arm_4_joint
+    - right_arm_5_joint
+    - right_arm_6_joint
+    - left_arm_0_joint
+    - left_arm_1_joint
+    - left_arm_2_joint
+    - left_arm_3_joint
+    - left_arm_4_joint
+    - left_arm_5_joint
+    - left_arm_6_joint
+    - triangle_base_joint
+  position:
+    - 1.713904789486074
+    - -1.079205632781659
+    - -0.7252017312671621 
+    - 1.6303115717558576
+    - 2.58308729295
+    - 0.9044019426275554
+    - 1.3056992608504874
+    - 0.36
+    - 1.41
+    - 1.96
+    - 1.52
+    - -2.1
+    - 0.9
+    - 0.1
+    - 0
