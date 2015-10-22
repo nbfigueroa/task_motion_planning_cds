@@ -29,7 +29,7 @@ $ git clone https://github.com/epfl-lasa/motion-generators.git
 ```
 $ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
 ```
-and don't forget to install all dependencies for package kuka-rviz-simulation (link here).
+and don't forget to install all dependencies for package [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation).
 
 - Install coupled-dynamical-systems package:
 
