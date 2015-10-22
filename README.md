@@ -9,7 +9,7 @@ This research was conducted in the Learning Algorithms and Systems Laboratory (L
 
 It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
 
-##REFERENCES
+###References:
 
 [1] N. Figueroa and A. Billard, “Discovering hierarchical structure in heterogenous and sequential task demonstrations,” In preparation.
 
