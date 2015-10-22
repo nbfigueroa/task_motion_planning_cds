@@ -21,7 +21,6 @@
 /**
  * Controller for converting cartesian commands to joint velocities.
  */
-
 #include "RTKRobotArm.h"
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
@@ -51,8 +50,6 @@ char buf[255];
 volatile bool isJointOkay, isFTOkay, isAllOkay, shut;
 bool bOrientCtrl, bUseForce, bUseIAI, simulation;
 double reach_tol, ft_tol, force_tracking_gain, traj_tracking_gain, max_ee_ft_norm;
-static ros::Time t_old;
-
 
 Eigen::VectorXd  joint_vel, joint_stiff, joint_damp;
 
@@ -277,13 +274,9 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 
 	ROS_INFO_STREAM_THROTTLE(0.5, "Publishing EE TF");
 	static tf::TransformBroadcaster br;
-	if(ros::Time::now() - t_old > ros::Duration(0.1)){
-		br.sendTransform(tf::StampedTransform(des_ee_pose, ros::Time::now(), world_frame, "/des_ee_tf"));
-		br.sendTransform(tf::StampedTransform(curr_ee_pose, ros::Time::now(), world_frame, "/curr_ee_tf"));
-		t_old = ros::Time::now();
-	}
-		
-	
+	br.sendTransform(tf::StampedTransform(des_ee_pose, ros::Time::now(), world_frame, "/des_ee_tf"));
+	br.sendTransform(tf::StampedTransform(curr_ee_pose, ros::Time::now(), world_frame, "/curr_ee_tf"));
+
 
   // Cartesian velocity due to position/orientation error
 	tf::Vector3 linvel = des_ee_pose.getOrigin() - curr_ee_pose.getOrigin();
@@ -306,8 +299,8 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 		ROS_INFO_STREAM_THROTTLE(0.5, "Orient. Err:\t"<<qdiff);
 	}
 
-//	if (pos_err < 0.001 && qdiff < 0.01){ // LASA 0.5deg
-      if (pos_err < 0.015 && qdiff < 0.05){ // Boxy 1.7 deg
+	if (pos_err < 0.01 && qdiff < 0.05){ // LASA 0.5deg
+//      if (pos_err < 0.015 && qdiff < 0.05){ // Boxy 1.7 deg
 		vel_due_to_pos(3) = 0;
 		vel_due_to_pos(4) = 0;
 		vel_due_to_pos(5) = 0;
@@ -371,9 +364,12 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 	int joint_state_size; 
 	if (simulation)	
 		joint_state_size = 21;
-	else
-		joint_state_size = 14;
-		
+	else{
+		//FOR BOXY
+//		joint_state_size = 15;
+		//FOR LASA
+		joint_state_size = 7;
+	}
 	//Check joint state message size
 	if(name != joint_state_size)
 	  return;
@@ -486,8 +482,6 @@ int main(int argc, char** argv) {
 //	shut = false;
 //	signal(SIGINT, handler);
 
-
-	t_old = ros::Time::now();
 
 	if(!parseParams(_nh)) {
 		ROS_ERROR("Errors while parsing arguments.");

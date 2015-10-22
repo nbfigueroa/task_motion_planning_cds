@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <launch>
   <node name="joint_to_cart" pkg="state_transformers" type="joint_to_cart" output="screen" respawn="false">
     
@@ -6,9 +7,10 @@
     <param name="ee_link" value="TOOL"/>
      <param name="negate_torque" value="true"/>
      <param name="singular_tol" value="0.1"/>
+     <param name="simulation" value="true"/>
     
   
-  	<param name="input_joint_topic" value="/joint_states"/> 
+     <param name="input_joint_topic" value="/joint_states"/> 
     <param name="output_cart_pose" value="/joint_to_cart/est_ee_pose"/>
     <param name="output_cart_ft" value="/joint_to_cart/est_ee_ft"/>
 

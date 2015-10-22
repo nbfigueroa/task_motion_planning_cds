@@ -53,6 +53,9 @@
   <build_depend>lasa_action_planners</build_depend> 
   <build_depend>cds_execution</build_depend> 
   <build_depend>robohow_common_msgs</build_depend> 
+   <build_depend>tf_conversions</build_depend>
+  <build_depend>frilibrary_ros</build_depend>
+  <build_depend>kuka_robot_model</build_depend>
 
   <run_depend>sensor_msgs</run_depend> 
   <run_depend>roscpp</run_depend> 
@@ -65,7 +68,9 @@
   <run_depend>lasa_action_planners</run_depend> 
   <run_depend>cds_execution</run_depend> 
   <run_depend>robohow_common_msgs</run_depend>
-  
+  <run_depend>tf_conversions</run_depend>
+  <run_depend>frilibrary_ros</run_depend>
+  <run_depend>kuka_robot_model</run_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- You can specify that this package is a metapackage here: -->

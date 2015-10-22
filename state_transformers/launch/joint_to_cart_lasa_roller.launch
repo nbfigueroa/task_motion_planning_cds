@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="joint_to_cart_lasa" pkg="state_transformers" type="joint_to_cart_lasa" output="screen" respawn="false">
+    
+    <param name="data_path" value="$(find state_transformers)/data"/>
+    <param name="robot_name" value="KUKA_LASA_ROLLER"/>
+    <param name="ee_link" value="TOOL"/>
+    
+    <param name="negate_torque" value="false"/>
+    <param name="singular_tol" value="0.1"/>
+    <param name="simulation" value="false"/>   
+    
+    <param name="input_joint_topic" value="/joint_states"/>
+    <param name="output_cart_pose" value="/joint_to_cart/est_ee_pose"/>
+    <param name="output_cart_ft" value="/joint_to_cart/est_ee_ft"/>
+    <param name="world_frame" value="/world_frame"/>
+
+  </node>
+</launch>

@@ -98,8 +98,14 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS})
 
 ## Declare a cpp executable
 add_executable(joint_to_cart src/joint_to_cart.cpp src/RTKRobotArm.cpp)
+add_executable(joint_to_cart_pour_tool src/joint_to_cart_pour_tool.cpp src/RTKRobotArm.cpp)
+add_executable(joint_to_cart_lasa src/joint_to_cart_lasa.cpp src/RTKRobotArm.cpp)
+
 add_executable(cart_to_joint src/cart_to_joint.cpp src/RTKRobotArm.cpp)
 add_executable(cart_to_joint_pour src/cart_to_joint_pour.cpp src/RTKRobotArm.cpp)
+add_executable(cart_to_joint_pour_tool src/cart_to_joint_pour_tool.cpp src/RTKRobotArm.cpp)
+add_executable(cart_to_joint_lasa src/cart_to_joint_lasa.cpp src/RTKRobotArm.cpp)
+add_executable(cart_to_kuka src/cart_to_kuka.cpp src/RTKRobotArm.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -107,8 +113,14 @@ add_executable(cart_to_joint_pour src/cart_to_joint_pour.cpp src/RTKRobotArm.cpp
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(joint_to_cart   ${catkin_LIBRARIES} )
+ target_link_libraries(joint_to_cart_pour_tool   ${catkin_LIBRARIES} )
+ target_link_libraries(joint_to_cart_lasa   ${catkin_LIBRARIES} )
+ 
  target_link_libraries(cart_to_joint   ${catkin_LIBRARIES} )
  target_link_libraries(cart_to_joint_pour   ${catkin_LIBRARIES} )
+ target_link_libraries(cart_to_joint_pour_tool   ${catkin_LIBRARIES} )
+ target_link_libraries(cart_to_joint_lasa   ${catkin_LIBRARIES} )
+ target_link_libraries(cart_to_kuka   ${catkin_LIBRARIES} )
  
 #############
 ## Install ##

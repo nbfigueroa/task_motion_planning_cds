@@ -21,7 +21,6 @@
 /**
  * Controller for converting cartesian commands to joint velocities.
  */
-
 #include "RTKRobotArm.h"
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
@@ -36,7 +35,7 @@
 #include <signal.h>
 #include "std_msgs/String.h"
 
-#define DEFAULT_JSTIFF 		200
+#define DEFAULT_JSTIFF 		500
 #define DEFAULT_JDAMP		0.7
 #define DEFAULT_FT_TOL 		0.05
 #define DEFAULT_REACH_TOL 	0.05
@@ -51,8 +50,6 @@ char buf[255];
 volatile bool isJointOkay, isFTOkay, isAllOkay, shut;
 bool bOrientCtrl, bUseForce, bUseIAI, simulation;
 double reach_tol, ft_tol, force_tracking_gain, traj_tracking_gain, max_ee_ft_norm;
-static ros::Time t_old;
-
 
 Eigen::VectorXd  joint_vel, joint_stiff, joint_damp;
 
@@ -109,7 +106,7 @@ bool parseParams(const ros::NodeHandle& n) {
 		ROS_ERROR("Must provide estimated Cartesian stiffness topic!");
 		ret = false;
 	} else {
-		ROS_INFO_STREAM("Estimated Cartesian stiffness topic: "<<input_estimate_ft_topic);
+		ROS_INFO_STREAM("Estimated Cartesian FT topic: "<<input_estimate_ft_topic);
 	}
 
 	if(!n.getParam("output_joints_topic", output_joints_topic)) {
@@ -277,13 +274,9 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 
 	ROS_INFO_STREAM_THROTTLE(0.5, "Publishing EE TF");
 	static tf::TransformBroadcaster br;
-	if(ros::Time::now() - t_old > ros::Duration(0.1)){
-		br.sendTransform(tf::StampedTransform(des_ee_pose, ros::Time::now(), world_frame, "/des_ee_tf"));
-		br.sendTransform(tf::StampedTransform(curr_ee_pose, ros::Time::now(), world_frame, "/curr_ee_tf"));
-		t_old = ros::Time::now();
-	}
-		
-	
+	br.sendTransform(tf::StampedTransform(des_ee_pose, ros::Time::now(), world_frame, "/des_ee_tf"));
+	br.sendTransform(tf::StampedTransform(curr_ee_pose, ros::Time::now(), world_frame, "/curr_ee_tf"));
+
 
   // Cartesian velocity due to position/orientation error
 	tf::Vector3 linvel = des_ee_pose.getOrigin() - curr_ee_pose.getOrigin();
@@ -306,8 +299,8 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 		ROS_INFO_STREAM_THROTTLE(0.5, "Orient. Err:\t"<<qdiff);
 	}
 
-//	if (pos_err < 0.001 && qdiff < 0.01){ // LASA 0.5deg
-      if (pos_err < 0.015 && qdiff < 0.05){ // Boxy 1.7 deg
+	if (pos_err < 0.01 && qdiff < 0.05){ // LASA 0.5deg
+//      if (pos_err < 0.015 && qdiff < 0.05){ // Boxy 1.7 deg
 		vel_due_to_pos(3) = 0;
 		vel_due_to_pos(4) = 0;
 		vel_due_to_pos(5) = 0;
@@ -338,8 +331,10 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 	// If force is activated from launch file
 	if(bUseForce) {
 
+		ROS_WARN_STREAM_THROTTLE(1, "USING FORCE!!");
 		// Compute force error
 		Eigen::VectorXd ft_err = des_ee_ft - est_ee_ft;
+//		ROS_INFO_STREAM("Desired force: "<< des_ee_ft[2] << " Est Force: " << est_ee_ft[2] << " Error: " << ft_err.norm());
 		double ft_err_nrm;
 		if(bOrientCtrl) {
 			ft_err_nrm = ft_err.norm();
@@ -351,8 +346,10 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 		// Remove force if too small. This is necessary due to residual errors in EE force estimation.
 		// Dont apply external forces until desired position is almost reached within reach_tol
 		if(ft_err_nrm > ft_tol && err < reach_tol) {
+//		if(ft_err_nrm > ft_tol) {
 			forceErrorToVelocity(ft_err, vel_due_to_force);
 		}
+//		forceErrorToVelocity(ft_err, vel_due_to_force);
 		ROS_INFO_STREAM_THROTTLE(0.5, "Force Err:\t"<<ft_err_nrm);
 	}
 
@@ -371,9 +368,12 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 	int joint_state_size; 
 	if (simulation)	
 		joint_state_size = 21;
-	else
-		joint_state_size = 14;
-		
+	else{
+		//FOR BOXY
+//		joint_state_size = 15;
+		//FOR LASA
+		joint_state_size = 7;
+	}
 	//Check joint state message size
 	if(name != joint_state_size)
 	  return;
@@ -431,7 +431,7 @@ void ftCallback(const geometry_msgs::WrenchStampedConstPtr& msg) {
 	des_ee_ft[4] = data->wrench.torque.y;
 	des_ee_ft[5] = data->wrench.torque.z;
 
-	ROS_INFO_STREAM_THROTTLE(1, "Received FT: "<<des_ee_ft[0]<<","<<des_ee_ft[1]<<","<<des_ee_ft[2]<<","
+	ROS_WARN_STREAM_THROTTLE(1, "Received Desired FT: "<<des_ee_ft[0]<<","<<des_ee_ft[1]<<","<<des_ee_ft[2]<<","
 			<<des_ee_ft[3]<<","<<des_ee_ft[4]<<","<<des_ee_ft[5]);
 }
 
@@ -449,7 +449,7 @@ void estFTCallback(const geometry_msgs::WrenchStampedConstPtr& msg) {
 	est_ee_ft -= shift_ee_ft;
 	//	est_ee_ft[5] = -1.0;
 	isFTOkay = true;
-	ROS_INFO_STREAM_THROTTLE(1, "Received FT: "<<des_ee_ft[0]<<","<<des_ee_ft[1]<<","<<des_ee_ft[2]<<","
+	ROS_WARN_STREAM_THROTTLE(1, "Received Current FT: "<<des_ee_ft[0]<<","<<des_ee_ft[1]<<","<<des_ee_ft[2]<<","
 			<<des_ee_ft[3]<<","<<des_ee_ft[4]<<","<<des_ee_ft[5]);
 }
 
@@ -480,14 +480,12 @@ void actionStateCallback(const std_msgs::String::ConstPtr& msg)
 int main(int argc, char** argv) {
 
 //	ros::init(argc, argv, "cart_to_joint", ros::init_options::NoSigintHandler);
-	ros::init(argc, argv, "cart_to_joint");
+	ros::init(argc, argv, "cart_to_joint_lasa");
 	ros::NodeHandle nh;
 	ros::NodeHandle _nh("~");
 //	shut = false;
 //	signal(SIGINT, handler);
 
-
-	t_old = ros::Time::now();
 
 	if(!parseParams(_nh)) {
 		ROS_ERROR("Errors while parsing arguments.");

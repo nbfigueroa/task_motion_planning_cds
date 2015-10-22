@@ -18,6 +18,7 @@
     <param name="input_stiff_topic" value="/cart_to_joint/des_ee_stiff"/>
     <param name="input_estimate_ft_topic" value="/joint_to_cart/est_ee_ft"/>
     <param name="output_joints_topic" value="/KUKA/joint_cmd"/> 
-
+	<param name="world_frame" value="/world_frame"/>
+	
   </node>
 </launch>

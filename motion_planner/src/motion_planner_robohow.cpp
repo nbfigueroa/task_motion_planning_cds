@@ -23,9 +23,6 @@
 #include <tf/transform_datatypes.h>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
-#include <tf_conversions/tf_eigen.h>
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 //-- Custom ActionLib Stuff --//
 #include "actionlib/server/simple_action_server.h"
 #include <lasa_action_planners/PLAN2CTRLAction.h>
@@ -36,51 +33,30 @@
 #include <robohow_common_msgs/GaussianDistribution.h>
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/WrenchStamped.h"
-#include "std_msgs/String.h"
-#include "std_msgs/Float32.h"
-#include "std_msgs/Bool.h"
-#include "std_msgs/Int32.h"
 //-- CDS Stuff --//
 #include "CDSExecution.h"
 //-- Eigen Stuff --//
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <signal.h>
 
 #define EE_STATE_POSE_TOPIC "/joint_to_cart/est_ee_pose"
 #define EE_STATE_FT_TOPIC "/joint_to_cart/est_ee_ft"
 #define EE_CMD_POSE_TOPIC   "/cart_to_joint/des_ee_pose"
 #define EE_CMD_FT_TOPIC   "/cart_to_joint/des_ee_ft"
 #define BASE_LINK			"/base_link"
+#define FORCE_SCALING		3.0
 #define MAX_ROLLING_FORCE	30
-#define FORCE_WAIT_TOL		9
+#define FORCE_WAIT_TOL		5
 
 
+using namespace std;
 
 tf::Pose ee_pose;
 Eigen::VectorXd ee_ft;
-volatile bool isOkay, isFTOkay, shut;
+volatile bool isOkay, isFTOkay;
 int mState;
-string base_path, path_matlab_plot;
-bool use_boxy_tool=false, homing=false, mytruncate=false;
-int plot_dyn = 0, plot_published = 0;
-std_msgs::Float32 gmr_msg;
-double FORCE_SCALING=1.5, init_err_f = 0.0;
-std_msgs::Int32 plot_dyn_msg;
-geometry_msgs::WrenchStamped msg_ft;
-
-
-// Boolean for detecting Ctrl-C
-void handler(int sig) {
-	shut = true;
-}
-
-/*void ppCallback(const std_msgs::Int32::ConstPtr& msg){
-	plot_published =  msg->data;
-	if (plot_published==1)
-		ROS_WARN_STREAM("Plot Succesfully Published");
-}*/
+string base_path;
 
 void eeStateCallback(const geometry_msgs::PoseStampedConstPtr& msg) {
 	const geometry_msgs::PoseStamped* data = msg.get();
@@ -110,8 +86,7 @@ protected:
 	enum DoughTaskPhase {
 		PHASEREACH=1,
 		PHASEROLL,
-		PHASEBACK,
-		PHASEHOME
+		PHASEBACK
 	};
 
 	// Rolling modes. FIXED corresponds to numbers that are good for BOXY and LASA robots.
@@ -123,8 +98,8 @@ protected:
 	};
 
 	ros::NodeHandle nh_;
-	ros::Subscriber sub_, sub_ft_, sub_plot_pub_;
-	ros::Publisher pub_, pub_ft_, pub_action_state_, pub_gmr_out_, pub_action_name_, pub_model_fname_, pub_plot_dyn_, pub_ee_pos_att_, pub_ee_ft_att_;
+	ros::Subscriber sub_, sub_ft_;
+	ros::Publisher pub_, pub_ft_;
 	geometry_msgs::PoseStamped msg_pose;
 	geometry_msgs::WrenchStamped msg_ft;
 	unsigned int action_mode;
@@ -142,20 +117,13 @@ protected:
 
 	// Load models from base_path depending on the PHASEROLL.
 	// Model files should be stored in paths that match this pattern
-	GMR* getNewGMRMappingModel(std::string base_path, std::string force_gmm_id) {
+	GMR* getNewGMRMappingModel(std::string base_path) {
 		char buf[1025];
-		sprintf(buf, "%s/Phase%d/forceGMM_%s.txt", base_path.c_str(), PHASEROLL, force_gmm_id.c_str());
+		sprintf(buf, "%s/Phase%d/forceGMM.txt", base_path.c_str(), PHASEROLL);
 		GMR* gmr = new GMR(buf);
 		std::vector<int> in(1), out(1);
 		in[0] = 0; out[0] = 1;
 		gmr->initGMR(in, out);
-
-		if (strncmp(force_gmm_id.c_str(),"last",4)==0){
-			FORCE_SCALING=2;
-			ROS_WARN_STREAM("Applying scaling to GMR Output of: "<< FORCE_SCALING);
-		}
-		
-
 		if(gmr->isInit) {
 			return gmr;
 		} else {
@@ -221,12 +189,11 @@ protected:
 		if(bWaitForForces) {
 			ROS_INFO_STREAM("Waiting for force "<<fz<<" N.");
 			sendPose(ee_pose);
-			ros::Rate wait(500);
+			ros::Rate wait(50);
 			while(ros::ok()) {
 				sendNormalForce(fz);
-				ROS_INFO_STREAM("Sending Normal force: " << fz << " Fz diff: " << fabs(ee_ft[2]-fz));
-				
-				if(fabs(ee_ft[2]-fz) < FORCE_WAIT_TOL) {
+				double force_err = ee_ft[2]-fz;
+				if(fabs(force_err) < FORCE_WAIT_TOL) {
 					break;
 				}
 				ros::spinOnce();
@@ -315,7 +282,8 @@ protected:
 			if(fabs(ee_ft[2]) > thr_force) {
 				break;
 			}
-			if(fabs(ee_pose.getOrigin().z()-startz) > min_height) {
+			double pos_err = ee_pose.getOrigin().z()-startz;
+			if(fabs(pos_err) > min_height) {
 				ROS_INFO("Max distance reached");
 				return false;
 			}
@@ -385,24 +353,17 @@ protected:
 	// Dynamics type - to select the type of master/slave dynamics (linear/model etc.)
 	// reachingThreshold - you know
 	// model_dt - you know
-	bool learned_model_execution(DoughTaskPhase phase, CDSController::DynamicsType masterType, CDSController::DynamicsType slaveType, double reachingThreshold, double model_dt, tf::Transform trans_obj, tf::Transform trans_att, std::string model_base_path, std::string force_gmm_id) {
+	bool learned_model_execution(DoughTaskPhase phase, CDSController::DynamicsType masterType, CDSController::DynamicsType slaveType,
+			double reachingThreshold, double model_dt,
+			tf::Transform trans_obj, tf::Transform trans_att, std::string model_base_path) {
 
-		ROS_INFO_STREAM(" Model Path "<<model_base_path);	
-		ROS_INFO_STREAM(" Learned model execution with phase "<<phase);
+		ROS_INFO_STREAM(" Model Path "<<model_base_path);
+		ROS_INFO_STREAM("Learned model execution with phase "<<phase);
 		ROS_INFO_STREAM(" Reaching threshold "<<reachingThreshold);
 		ROS_INFO_STREAM(" Model DT "<<model_dt);
-		if (force_gmm_id!="")
-                 ROS_INFO_STREAM(" Force GMM ID: "<< force_gmm_id);
-
 
 		ros::Rate wait(1);
-		tf::Transform  trans_final_target, ee_pos_att;
-
-		// To Visualize EE Frames		    
-		static tf::TransformBroadcaster br;
-		br.sendTransform(tf::StampedTransform(trans_final_target, ros::Time::now(), world_frame, "/attractor"));
-		br.sendTransform(tf::StampedTransform(trans_obj, ros::Time::now(), world_frame, "/object_frame"));
-
+		tf::Transform  trans_final_target;
 
 		// convert attractor information to world frame
 		trans_final_target.mult(trans_obj, trans_att);
@@ -412,30 +373,25 @@ protected:
 
 		// Publish attractors if running in simulation or with fixed values
 		if ((action_mode == ACTION_LASA_FIXED) || (action_mode == ACTION_BOXY_FIXED)) {
+		    static tf::TransformBroadcaster br;
 		    br.sendTransform(tf::StampedTransform(trans_final_target, ros::Time::now(), world_frame, "/attractor"));
 		}
 
 		// Initialize CDS
 		CDSExecution *cdsRun = new CDSExecution;
-		cdsRun->initSimple(model_base_path, phase, force_gmm_id);
+		cdsRun->initSimple(model_base_path, phase);
 		cdsRun->setObjectFrame(toMatrix4(trans_obj));
 		cdsRun->setAttractorFrame(toMatrix4(trans_att));
 		cdsRun->setCurrentEEPose(toMatrix4(ee_pose));
 		cdsRun->setDT(model_dt);
 
-
-		if (phase==PHASEBACK || phase==PHASEROLL)
-			 masterType = CDSController::LINEAR_DYNAMICS;
-
 		// Roll slow but move fast for reaching and back phases.
 		// If models have proper speed, this whole block can go!
 		if(phase == PHASEROLL) {
-			//cdsRun->setMotionParameters(1,1,0.5,reachingThreshold, masterType, slaveType);
-			cdsRun->setMotionParameters(1,1,2,reachingThreshold, masterType, slaveType);
+			cdsRun->setMotionParameters(1,1,0.5,reachingThreshold, masterType, slaveType);
 			// large threshold to avoid blocking forever
 			// TODO: should rely on preempt in action client.
-//			reachingThreshold = 0.02;
-			reachingThreshold = 0.025;
+			reachingThreshold = 0.02;
 		} else {
 			cdsRun->setMotionParameters(1,1,2,reachingThreshold, masterType, slaveType);
 		}
@@ -446,7 +402,7 @@ protected:
 		// If phase is rolling, need force model as well
 		GMR* gmr_perr_force = NULL;
 		if(phase == PHASEROLL) {
-			gmr_perr_force = getNewGMRMappingModel(model_base_path, force_gmm_id);
+			gmr_perr_force = getNewGMRMappingModel(model_base_path);
 			if(!gmr_perr_force) {
 				ROS_ERROR("Cannot initialize GMR model");
 				return false;
@@ -457,80 +413,15 @@ protected:
 		tf::Pose mNextRobotEEPose = ee_pose;
 		std::vector<double> gmr_in, gmr_out;
 		gmr_in.resize(1);gmr_out.resize(1);
-		double prog_curr, full_err, pos_err, ori_err, new_err, gmr_err;
-		tf::Vector3 att_t, curr_t;
+		double prog_curr, full_err;
 
 		ROS_INFO("Execution started");
 		tf::Pose p;
 		bool bfirst = true;
-
-		std_msgs::String string_msg, action_name_msg, model_fname_msg;
-		std::stringstream ss, ss_model;
-
-		if(phase ==  PHASEREACH) {
-			ss << "reach ";
-		}
-		else if (phase == PHASEROLL){
-			ss << "roll";
-		}	
-		else if (phase == PHASEBACK){
-			ss << "back";
-		}		
-
-		if (!homing){
-			string_msg.data = ss.str();
-			pub_action_state_.publish(string_msg);
-
-
-//			ss_model << path_matlab_plot << "/Phase" <<  phase << "/masterGMM.fig";
-
-			if (force_gmm_id=="")
-				ss_model << path_matlab_plot << "/Phase" <<  phase << "/masterGMM.fig";
-			else
-				ss_model << path_matlab_plot << "/Phase" <<  phase << "/ForceProfile_" << force_gmm_id << ".fig";
-			//ss_model << "/Phase" <<  phase << "/masterGMM.fig";
-			
-			model_fname_msg.data = ss_model.str();		
-			pub_model_fname_.publish(model_fname_msg);
-
-			action_name_msg.data = ss.str();
-			pub_action_name_.publish(action_name_msg);
-
-			plot_dyn = 1;			
-			plot_dyn_msg.data = plot_dyn;
-			pub_plot_dyn_.publish(plot_dyn_msg);
-			
-		}
-		
 		while(ros::ok()) {
-			
-			if (!homing)
-				plot_dyn = 1;
-			else
-				plot_dyn = 0;
-
-			plot_dyn_msg.data = plot_dyn;
-			pub_plot_dyn_.publish(plot_dyn_msg);
-
-			// Nadia's stuff
-			// Current progress variable (position/orientation error).
-			// TODO: send this back to action client as current progress
-			pos_err = (trans_final_target.getOrigin() - ee_pose.getOrigin()).length();
-			//Real Orientation Error qdiff = acos(dot(q1_norm,q2_norm))*180/pi
-			ori_err = acos(abs(trans_final_target.getRotation().dot(ee_pose.getRotation())));
-
-
-			ROS_INFO_STREAM_THROTTLE(0.5,"Position Threshold : " << reachingThreshold << " ... Current Error: "<<pos_err);
-			ROS_INFO_STREAM_THROTTLE(0.5,"Orientation Threshold : " << 0.01 << " ... Current Error: "<<ori_err);
-
-			/*double att_pos_err = (trans_final_target.getOrigin() - p.getOrigin()).length();
-			double att_ori_err = acos(abs(trans_final_target.getRotation().dot(p.getRotation())));
-
-			ROS_INFO_STREAM_THROTTLE(0.5,"Des-Att Position Error: " << att_pos_err);
-			ROS_INFO_STREAM_THROTTLE(0.5,"Des-Att Orientation Error: " << att_ori_err);*/
 
 			switch (phase) {
-			// Home, reach and back are the same control-wise
+			// Reach and back are the same control-wise
 			case PHASEREACH:
 
 			case PHASEBACK:
@@ -538,70 +429,27 @@ protected:
 				// TODO: send this back to action client as current progress
 				prog_curr = 0.5*((trans_final_target.getOrigin() - ee_pose.getOrigin()).length() + (trans_final_target.getRotation()-ee_pose.getRotation()).length());
 
-				// Compute Next Desired EE Pose
 				cdsRun->setCurrentEEPose(toMatrix4(mNextRobotEEPose));
 				toPose(cdsRun->getNextEEPose(), mNextRobotEEPose);
+
 				p = mNextRobotEEPose;
 
-				// Aswhini's Hack! Dont rely on model's orientation interpolation. Set it equal to target orientation to avoid
+				// Hack! Dont rely on model's orientation interpolation. Set it equal to target orientation to avoid
 				// going the wrong way around
 				p.setRotation(trans_final_target.getRotation());
-
-				//Publish desired force	
-				gmr_msg.data = 0.0;
-				pub_gmr_out_.publish(gmr_msg);
-
 				break;
 			case PHASEROLL:
 
-				// Current progress in rolling phase is simply the position error	
+				// Current progress in rolling phase is simply the position error
 				prog_curr = (trans_final_target.getOrigin() - ee_pose.getOrigin()).length();
 
-				// New position error being fed to GMR Force Model	
-				att_t = tf::Vector3(trans_final_target.getOrigin().getX(),trans_final_target.getOrigin().getY(),0.0);
-				curr_t = tf::Vector3(ee_pose.getOrigin().getX(),ee_pose.getOrigin().getY(),0.0);
-				new_err = (att_t - curr_t).length();
-
- 				gmr_err = new_err;
-				//Hack! Truncate errors to corresponding models				
-				if ((strncmp(force_gmm_id.c_str(),"first",5)==0) && (new_err > 0.03)){
-					gmr_err = 0.03;
- 				}
-				
-				if ((strncmp(force_gmm_id.c_str(),"mid",3)==0) && (new_err > 0.07)){
-					gmr_err = 0.07;
- 				}
-				if ((strncmp(force_gmm_id.c_str(),"last",4)==0) && (new_err > 0.13)){
-					gmr_err = 0.13;
-				}
-				//pos_err = prog_curr;
-				ori_err = 0;
-				gmr_err = gmr_err;
-
-				gmr_in[0] = gmr_err; // distance between EE and attractor
+				gmr_in[0] = prog_curr; // distance between EE and attractor
 
 				// Query the model for desired force
 				getGMRResult(gmr_perr_force, gmr_in, gmr_out);
-	
-/*				double fz_plot;
-				getGMRResult(gmr_perr_force, -gmr_in, fz_plot);*/
-				//-> INSTEAD OF SENDING GMR OUTPUT / SEND EST_EE_FT(Z)
-				// Send fz and distance to attractor for plotting		
-				msg_ft.wrench.force.x = gmr_err;
-				msg_ft.wrench.force.y = gmr_out[0]; //ee_ft[2]
-				msg_ft.wrench.force.z = 0;
-				msg_ft.wrench.torque.x = 0;
-				msg_ft.wrench.torque.y = 0;
-				msg_ft.wrench.torque.z = 0;
-				pub_ee_ft_att_.publish(msg_ft);
 
 				// Hack! Scale the force to be in reasonable values
 				gmr_out[0] = FORCE_SCALING*fabs(gmr_out[0]);
-
-				ROS_INFO_STREAM_THROTTLE(0.5,"Distance to Attractor: " << new_err << " GMR output (N): " << gmr_out[0]);
-
-				gmr_msg.data = gmr_out[0];
-				pub_gmr_out_.publish(gmr_msg);
 
 				// Hack! Safety first!
 				if(gmr_out[0] > MAX_ROLLING_FORCE) {
@@ -617,8 +465,6 @@ protected:
 				}
 				ROS_INFO_STREAM_THROTTLE(0.5, "Force applied: "<<gmr_out[0]);
 
-
-
 				cdsRun->setCurrentEEPose(toMatrix4(mNextRobotEEPose));
 				toPose(cdsRun->getNextEEPose(), mNextRobotEEPose);
 
@@ -629,50 +475,16 @@ protected:
 
 				// Hack! Dont rely on the Z component of the model. It might go below the table!
 				p.getOrigin().setZ(trans_final_target.getOrigin().getZ());
-
-				homing=false;
 				break;
 			default:
 				ROS_ERROR_STREAM("No such phase defined "<<phase);
 				return false;
 			}
 
-
-			// Add rotation of Tool wrt. flange_link for BOXY
-			/*if (use_boxy_tool){
-				tf::Matrix3x3 R = p.getBasis();
-	      			Eigen::Matrix3d R_ee;
-				tf::matrixTFToEigen(R,R_ee);
-
-				Eigen::Matrix3d R_tool;
-				R_tool << -0.7071, -0.7071, 0.0, 
-                           		  0.7071,-0.7071, 0.0,
-                            		      0.0,  0.0,  1.0;
-
-	      			//multiply tool rot
-				R_ee = R_ee*R_tool;
-                                tf::matrixEigenToTF(R_ee,R);				
-				p.setBasis(R);
-			}*/			
-
-
 			// Send the computed pose from one of the above phases
 			sendPose(p);
 
-			// convert and send ee pose to attractor frame to plots
-			ee_pos_att.mult(trans_final_target.inverse(), p);
-			geometry_msgs::PoseStamped msg;
-			msg.pose.position.x = ee_pos_att.getOrigin().x();
-			msg.pose.position.y = ee_pos_att.getOrigin().y();
-			msg.pose.position.z = ee_pos_att.getOrigin().z();
-			msg.pose.orientation.x = ee_pos_att.getRotation().x();
-			msg.pose.orientation.y = ee_pos_att.getRotation().y();
-			msg.pose.orientation.z = ee_pos_att.getRotation().z();
-			msg.pose.orientation.w = ee_pos_att.getRotation().w();
-			pub_ee_pos_att_.publish(msg);
-			
-
-			//ROS_INFO_STREAM_THROTTLE(0.5,"Error "<<prog_curr);
+			ROS_INFO_STREAM_THROTTLE(0.5,"Error "<<prog_curr);
 
 			// check that preempt has not been requested by the client
 			if (as_.isPreemptRequested() || !ros::ok())
@@ -687,40 +499,22 @@ protected:
 			feedback_.progress = prog_curr;
 			as_.publishFeedback(feedback_);
 
-/*			if(prog_curr < reachingThreshold) {
-				break;
-			}*/
-
-			//Orientation error	0.05
-			if(pos_err < reachingThreshold && (ori_err < 0.05 || isnan(ori_err))) {
-
+			if(prog_curr < reachingThreshold) {
 				break;
 			}
-
 			loop_rate.sleep();
 		}
 		delete cdsRun;
 
 		if(phase ==  PHASEREACH) {
 			// Hack! If phase is "reach", find the table right after reaching
-			if (bWaitForForces && !homing)	{		
-				bool x = find_table_for_rolling(0.35, 0.05, 5);
-//				bool x = find_table_for_rolling(0.35, 0.1, 5);
-				//-> Send command to dynamics plotter to stop logging				 
-				return x;
-			}
-			if (!homing){
-				//-> Send command to dynamics plotter to stop logging				 
-			}
+			return find_table_for_rolling(0.35, 0.05, 5);
 		} else if (phase == PHASEROLL){
 			// Hack! wait for zero force before getting ready to recieve further commands.
 			// This is to avoid dragging the dough.
 			sendAndWaitForNormalForce(0);
-			//-> Send command to dynamics plotter to start plotting
 			return ros::ok();
 		} else {
-			//->Send command to dynamics plotter to start plotting
-
 			return ros::ok();
 		}
 	}
@@ -737,14 +531,6 @@ public:
 		sub_ft_ = nh_.subscribe<geometry_msgs::WrenchStamped>(EE_STATE_FT_TOPIC, 1, eeFTCallback);
 		pub_ = nh_.advertise<geometry_msgs::PoseStamped>(EE_CMD_POSE_TOPIC, 1);
 		pub_ft_ = nh_.advertise<geometry_msgs::WrenchStamped>(EE_CMD_FT_TOPIC, 1);
-		pub_gmr_out_ = nh_.advertise<std_msgs::Float32>("GMR_OUT", 1);
-	        pub_action_state_ = nh_.advertise<std_msgs::String>("Action_State", 1000);
-		pub_action_name_ = nh_.advertise<std_msgs::String>("/motion_planner/action_name", 1000);
-		pub_model_fname_ = nh_.advertise<std_msgs::String>("/motion_planner/model_file_name", 1000);
-		pub_plot_dyn_ = nh_.advertise<std_msgs::Int32>("/motion_planner/plot_dynamics", 1000);
-		pub_ee_pos_att_ = nh_.advertise<geometry_msgs::PoseStamped>("/motion_planner/ee_pos_att", 1000);
-		pub_ee_ft_att_ = nh_.advertise<geometry_msgs::WrenchStamped>("/motion_planner/ee_ft_att", 1000);
-		//sub_plot_pub_ = nh_.subscribe<std_msgs::Int32>("/motion_planner/plot_published", 10, ppCallback);
 		as_.start();
 }
 
@@ -771,11 +557,6 @@ public:
 
 		_nh.getParam("world_frame", world_frame);
 		_nh.getParam("model_base_path", base_path);
-		_nh.getParam("use_boxy_tool", use_boxy_tool);
-		_nh.getParam("path_matlab_plot", path_matlab_plot);
-		
-		if (use_boxy_tool)
-		   ROS_INFO("Using Boxy Tool adding extra Rotation");
 
 		ROS_INFO_STREAM("Selected Action Mode: " << ad);
 
@@ -853,8 +634,6 @@ public:
 				phase = PHASEREACH;
 			} else if(goal->action_name == "back") {
 				phase = PHASEBACK;
-			} else if(goal->action_name == "home") {
-				phase = PHASEHOME;
 			} else {
 				ROS_ERROR_STREAM("Unidentified action name "<<goal->action_name.c_str());
 				result_.success = 0;
@@ -863,46 +642,24 @@ public:
 			}
 
 			//TODO: update these from action
-			double reachingThreshold = 0.02, model_dt = 0.01;
-			//CDSController::DynamicsType masterType = CDSController::LINEAR_DYNAMICS;
-			CDSController::DynamicsType masterType = CDSController::MODEL_DYNAMICS;
-			//CDSController::DynamicsType slaveType = CDSController::LINEAR_DYNAMICS;
-			CDSController::DynamicsType slaveType = CDSController::UTHETA;
+			double reachingThreshold = 0.01, model_dt = 0.01;
+			CDSController::DynamicsType masterType = CDSController::LINEAR_DYNAMICS;
+			CDSController::DynamicsType slaveType = CDSController::LINEAR_DYNAMICS;
 			tf::Transform trans_obj, trans_att;
-
-			//Little hack for using reaching phase for HOMING				
-			if (phase==PHASEHOME){
-				     phase=PHASEREACH;
-				     homing = true;
-			}
 
 			switch (action_mode) {
 			case ACTION_BOXY_FIXED:
-				/*if(phase == PHASEREACH) {
-					trans_obj.setOrigin(tf::Vector3(0.7, -0.43, 0.64)); // TODO: remember to add 0.15 to tf values as well
+				if(phase == PHASEREACH) {
+					trans_obj.setOrigin(tf::Vector3(0.7, -0.43, 0.64 + 0.15)); // TODO: remember to add 0.15 to tf values as well
 					trans_obj.setRotation(tf::Quaternion(-0.01, 0.99, 0.005, -0.009));
 				} else if(phase == PHASEROLL) {
 					trans_obj.setOrigin(tf::Vector3(0.85, -0.43, ee_pose.getOrigin().z()));
 					trans_obj.setRotation(tf::Quaternion(-0.01, 0.99, 0.005, -0.009));
 				} else if(phase == PHASEBACK) {
-					trans_obj.setOrigin(tf::Vector3(0.73, -0.63, 0.84));
+					trans_obj.setOrigin(tf::Vector3(0.73, -0.43, 0.84));
 					trans_obj.setRotation(tf::Quaternion(-0.01, 0.99, 0.005, -0.009));
 				}
-				trans_att.setIdentity();*/
-				
-				trans_obj.setIdentity();
-				trans_obj.setOrigin(tf::Vector3(0.8, -0.43, 0.64)); 
-
-				if(phase == PHASEREACH) {
-				        trans_att.setOrigin(tf::Vector3(-0.05, 0,0)); // TODO: remember to add 0.15 to tf values as well
-					trans_att.setRotation(tf::Quaternion(-0.01, 0.99, 0.005, -0.009));
-				} else if(phase == PHASEROLL) {
-					trans_att.setOrigin(tf::Vector3(0.05, 0, 0));
-					trans_att.setRotation(tf::Quaternion(-0.01, 0.99, 0.005, -0.009));
-				} else if(phase == PHASEBACK) {
-					trans_att.setOrigin(tf::Vector3(-0.15, -0.2, 0.15));
-					trans_att.setRotation(tf::Quaternion(-0.01, 0.99, 0.005, -0.009));
-				}
+				trans_att.setIdentity();
 				break;
 			case ACTION_LASA_FIXED:
 				if(phase == PHASEREACH) {
@@ -928,79 +685,35 @@ public:
 				trans_att.setOrigin(tf::Vector3(goal->attractor_frame.translation.x, goal->attractor_frame.translation.y,
 						goal->attractor_frame.translation.z));
 
-
-				if (bWaitForForces){ //HACK FOR BOXY
-					// Hack! For setting heights for reach and add offset of roller 
-					if(phase == PHASEREACH) {
-						trans_att.setOrigin(tf::Vector3(goal->attractor_frame.translation.x, goal->attractor_frame.translation.y,goal->attractor_frame.translation.z + 0.1));
-					}
-
-					// Hack! safety for rolling
-					if(phase == PHASEROLL) {
-						trans_obj.setOrigin(tf::Vector3(goal->object_frame.translation.x, goal->object_frame.translation.y,ee_pose.getOrigin().getZ()));
-						trans_att.setOrigin(tf::Vector3(goal->attractor_frame.translation.x, goal->attractor_frame.translation.y, 0.0));				
-					}
+				// Hack! For setting heights for reach and back
+				if(phase == PHASEREACH || phase == PHASEBACK) {
+					trans_obj.getOrigin().setZ(0.15);
+					trans_att.getOrigin().setZ(0.0);
 				}
 
-				/*if (bWaitForForces){ //HACK FOR LASA
-					// Hack! For setting heights for reach and back
-					if(phase == PHASEREACH || phase == PHASEBACK) {
-						trans_obj.getOrigin().setZ(0.15);
-						trans_att.getOrigin().setZ(0.0);
-					}
-
-					// Hack! safety for rolling
-					if(phase == PHASEROLL) {
-						trans_obj.getOrigin().setZ(ee_pose.getOrigin().getZ());
-						trans_att.getOrigin().setZ(0.0);
-					}
-				}*/
-
+				// Hack! safety for rolling
+				if(phase == PHASEROLL) {
+					trans_obj.getOrigin().setZ(ee_pose.getOrigin().getZ());
+					trans_att.getOrigin().setZ(0.0);
+				}
 				break;
 			default:
 				break;
 			}
 
-
-			std::string force_gmm_id = goal->force_gmm_id;
 			success = learned_model_execution(phase, masterType, slaveType, reachingThreshold,
-					model_dt, trans_obj, trans_att, base_path, force_gmm_id);
-
-
+					model_dt, trans_obj, trans_att, base_path);
 		}
 
 		result_.success = success;
-
-                homing=false;
 		if(success)
 		{
-
-			if (!homing){
-					ROS_WARN_STREAM("STORE PLOT");
-					plot_dyn = 2;
-					plot_dyn_msg.data = plot_dyn;	
-					pub_plot_dyn_.publish(plot_dyn_msg);
-					ros::Rate r(1);
-					r.sleep();
-			}
-
-			//Wait for message of "plot stored"
-			/*ros::Rate wait(1000);
-			while(ros::ok() && (plot_published!=1)) {
-				ros::spinOnce();
-				wait.sleep();
-			}*/						
 			ROS_INFO("%s: Succeeded", action_name_.c_str());
 			as_.setSucceeded(result_);
-				
-
 		} else {
 			ROS_INFO("%s: Failed", action_name_.c_str());
 			as_.setAborted(result_);
 		}
-
-
-
 
 	}
 
@@ -1011,16 +724,10 @@ public:
 int main(int argc, char** argv) {
 
 	ros::init(argc, argv, "plan2ctrl");
-
 	ROS_INFO("Initializing Server");
 	PLAN2CTRLAction action_execution(ros::this_node::getName());
 	action_execution.initialize();
-
-	ros::Rate wait(1000);
-	while(ros::ok()) {
-		ros::spinOnce();
-		wait.sleep();
-	}
+	ros::spin();
 
 	return 0;
 }

@@ -168,9 +168,11 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 	int joint_state_size; 
 	if (simulation)	
 		joint_state_size = 21;
-	else
-		joint_state_size = 14;
-		
+	else{
+		// For BOXY: MIGHT CHANGE!!
+		//joint_state_size = 15;
+		joint_state_size = 7;
+	}
 	//Check joint state message size
 	if(name != joint_state_size)
 	  return;
@@ -246,8 +248,10 @@ int main(int argc, char** argv) {
 	pub_pose = nh.advertise<geometry_msgs::PoseStamped>(output_cart_pose, 3);
 	pub_ft = nh.advertise<geometry_msgs::WrenchStamped>(output_cart_ft, 3);
 	ros::Subscriber sub = nh.subscribe<sensor_msgs::JointState>(input_joint_topic, 10, jointStateCallback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber sub_ft = nh.subscribe<geometry_msgs::WrenchStamped>("/right_arm_ft_sensor/wrench", 10, sensorFTCallback, ros::TransportHints().tcpNoDelay());
-
+	// Uncomment to use FT Sensor for Boxy @ Bremen
+//	ros::Subscriber sub_ft = nh.subscribe<geometry_msgs::WrenchStamped>("/right_arm_ft_sensor/wrench", 10, sensorFTCallback, ros::TransportHints().tcpNoDelay());
+	// Uncommment to use FT Sensor for LWR4+ @ LASA
+	ros::Subscriber sub_ft = nh.subscribe<geometry_msgs::WrenchStamped>("/netft_data", 10, sensorFTCallback, ros::TransportHints().tcpNoDelay());
 
 	ROS_INFO("Node started");
 	ros::spin();

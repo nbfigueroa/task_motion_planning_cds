@@ -41,7 +41,6 @@ $ roslaunch lasa_perception_module tableDetectorOnLWRService.launch
 *****Joint to Cartesian Estimation*****
 $ roslaunch state_transformers joint_to_cart_lasa_pour_tool.launch
 
-
 *****Cartesian to Joint Estimation*****
 $ roslaunch state_transformers cart_to_joint_lasa_pour_tool.launch
 

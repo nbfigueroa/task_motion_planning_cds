@@ -4,7 +4,7 @@ project(motion_planner)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS mathlib std_tools robotlib cds_execution tf cmake_modules)
+find_package(catkin REQUIRED COMPONENTS mathlib std_tools robotlib cds_execution tf tf_conversions cmake_modules)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -99,7 +99,11 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS} ${lasa_
 
 ## Declare a cpp executable
 add_executable(motion_planner src/motion_planner.cpp)
+add_executable(motion_planner_robohow src/motion_planner_robohow.cpp)
 add_executable(motion_planner_pouring src/motion_planner_pouring.cpp)
+add_executable(motion_planner_pouring_tool src/motion_planner_pouring_tool.cpp)
+add_executable(motion_planner_lasa src/motion_planner_lasa.cpp)
+add_executable(motion_planner_hhri src/motion_planner_hhri.cpp)
 add_executable(test_traj src/test_traj.cpp)
 add_executable(test_force src/test_force.cpp)
 add_executable(test_rolling src/test_rolling.cpp)
@@ -111,12 +115,15 @@ add_executable(test_pour src/test_pour.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion_planner   ${catkin_LIBRARIES} )
+target_link_libraries(motion_planner_lasa   ${catkin_LIBRARIES} )
+target_link_libraries(motion_planner_hhri   ${catkin_LIBRARIES} )
+target_link_libraries(motion_planner_robohow   ${catkin_LIBRARIES} )
 target_link_libraries(motion_planner_pouring   ${catkin_LIBRARIES} )
+target_link_libraries(motion_planner_pouring_tool   ${catkin_LIBRARIES} )
 target_link_libraries(test_traj   ${catkin_LIBRARIES} )
 target_link_libraries(test_force   ${catkin_LIBRARIES} )
 target_link_libraries(test_rolling   ${catkin_LIBRARIES} )
 target_link_libraries(test_pour   ${catkin_LIBRARIES} )
- 
 
 #############
 ## Install ##

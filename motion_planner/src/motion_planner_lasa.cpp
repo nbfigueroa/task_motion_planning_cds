@@ -53,7 +53,7 @@
 #define EE_CMD_POSE_TOPIC   "/cart_to_joint/des_ee_pose"
 #define EE_CMD_FT_TOPIC   "/cart_to_joint/des_ee_ft"
 #define BASE_LINK			"/base_link"
-#define MAX_ROLLING_FORCE	30
+#define MAX_ROLLING_FORCE	40
 #define FORCE_WAIT_TOL		9
 
 
@@ -66,7 +66,7 @@ string base_path, path_matlab_plot;
 bool use_boxy_tool=false, homing=false, mytruncate=false;
 int plot_dyn = 0, plot_published = 0;
 std_msgs::Float32 gmr_msg;
-double FORCE_SCALING=1.5, init_err_f = 0.0;
+double FORCE_SCALING=2, init_err_f = 0.0;
 std_msgs::Int32 plot_dyn_msg;
 geometry_msgs::WrenchStamped msg_ft;
 
@@ -205,6 +205,7 @@ protected:
 	}
 
 	void sendNormalForce(double fz) {
+		ROS_INFO_STREAM("Sending normal force command:"<< fz);
 		msg_ft.wrench.force.x = 0;
 		msg_ft.wrench.force.y = 0;
 		msg_ft.wrench.force.z = fz;
@@ -224,6 +225,7 @@ protected:
 			ros::Rate wait(500);
 			while(ros::ok()) {
 				sendNormalForce(fz);
+				ROS_INFO_STREAM("Z Force sensed on ee: "<< ee_ft[2] << " desired force: " << fz);
 				ROS_INFO_STREAM("Sending Normal force: " << fz << " Fz diff: " << fabs(ee_ft[2]-fz));
 				
 				if(fabs(ee_ft[2]-fz) < FORCE_WAIT_TOL) {
@@ -431,6 +433,7 @@ protected:
 		// If models have proper speed, this whole block can go!
 		if(phase == PHASEROLL) {
 			//cdsRun->setMotionParameters(1,1,0.5,reachingThreshold, masterType, slaveType);
+			masterType = CDSController::LINEAR_DYNAMICS;
 			cdsRun->setMotionParameters(1,1,2,reachingThreshold, masterType, slaveType);
 			// large threshold to avoid blocking forever
 			// TODO: should rely on preempt in action client.
@@ -576,13 +579,13 @@ protected:
 				}
 				//pos_err = prog_curr;
 				ori_err = 0;
-				gmr_err = gmr_err;
+//				gmr_err = -gmr_err;
 
 				gmr_in[0] = gmr_err; // distance between EE and attractor
 
 				// Query the model for desired force
 				getGMRResult(gmr_perr_force, gmr_in, gmr_out);
-	
+
 /*				double fz_plot;
 				getGMRResult(gmr_perr_force, -gmr_in, fz_plot);*/
 				//-> INSTEAD OF SENDING GMR OUTPUT / SEND EST_EE_FT(Z)
@@ -600,13 +603,14 @@ protected:
 
 				ROS_INFO_STREAM_THROTTLE(0.5,"Distance to Attractor: " << new_err << " GMR output (N): " << gmr_out[0]);
 
-				gmr_msg.data = gmr_out[0];
-				pub_gmr_out_.publish(gmr_msg);
-
 				// Hack! Safety first!
 				if(gmr_out[0] > MAX_ROLLING_FORCE) {
 					gmr_out[0] = MAX_ROLLING_FORCE;
 				}
+
+				gmr_msg.data = -gmr_out[0];
+				pub_gmr_out_.publish(gmr_msg);
+
 
 				// Give some time for the force to catch up the first time. Then roll with constant force thereafter.
 				if(bfirst) {
@@ -615,7 +619,7 @@ protected:
 				} else {
 					sendNormalForce(-gmr_out[0]);
 				}
-				ROS_INFO_STREAM_THROTTLE(0.5, "Force applied: "<<gmr_out[0]);
+				ROS_INFO_STREAM_THROTTLE(0.5, "Force Sent to Controller: "<<-gmr_out[0]);
 
 
 
@@ -984,7 +988,7 @@ public:
 					r.sleep();
 			}
 
-			//Wait for message of "plot stored"
+			//Wait for message of "plot target_link_libraries(motion_planner   ${catkin_LIBRARIES} )"
 			/*ros::Rate wait(1000);
 			while(ros::ok() && (plot_published!=1)) {
 				ros::spinOnce();
@@ -1004,7 +1008,6 @@ public:
 
 	}
 
-
 };
 
 
@@ -1013,6 +1016,7 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "plan2ctrl");
 
 	ROS_INFO("Initializing Server");
+	ROS_INFO("doing motion planner lasa");
 	PLAN2CTRLAction action_execution(ros::this_node::getName());
 	action_execution.initialize();
 

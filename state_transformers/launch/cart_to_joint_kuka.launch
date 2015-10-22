@@ -1,29 +1,34 @@
+<?xml version="1.0"?>
 <launch>
-  <node name="cart_to_joint" pkg="state_transformers" type="cart_to_joint" output="screen" respawn="false">
-    
+  <node name="cart_to_joint_lasa" pkg="state_transformers" type="cart_to_joint_lasa" output="screen" respawn="false">
     <!-- Robot chain -->
     <param name="data_path" value="$(find state_transformers)/data"/>
     <param name="robot_name" value="KUKA_LASA_ROLLER"/>
     <param name="ee_link" value="TOOL"/>
     
     <!-- Controller parameters -->
+    <param name="rate" value="50"/>
     <param name="reach_tol" value="0.1"/>
     <param name="ft_tol" value="2"/>
     <param name="max_ee_ft_norm" value="40"/>
-    <param name="use_ft" value="false"/>
+    <param name="use_ft" value="true"/>
     <param name="orientation_ctrl" value="true"/>
-    <param name="max_jvel_deg" value="30"/>
+    <param name="max_jvel_deg" value="15"/>
     <param name="traj_tracking_gain" value="2"/>
-    <param name="force_tracking_gain" value="0.02"/>
-    <param name="use_boxy" value="true"/>
-
+    <param name="force_tracking_gain" value="0.05"/>
+    <param name="use_boxy" value="false"/>
+    <param name="simulation" value="false"/>
+    
 	<!-- Communication -->
     <param name="input_joint_topic" value="/joint_states"/>
     <param name="input_pose_topic" value="/cart_to_joint/des_ee_pose"/>
     <param name="input_ft_topic" value="/cart_to_joint/des_ee_ft"/>
     <param name="input_stiff_topic" value="/cart_to_joint/des_ee_stiff"/>
-    <param name="input_estimate_ft_topic" value="/joint_to_cart/est_ee_ft"/>
-    <param name="output_joints_topic" value="/r_arm_vel/command"/>
-	<param name="world_frame" value="/world_frame"/>
+    
+    <param name="input_estimate_pose_topic" value="/KUKA/Pose"/>
+    <param name="input_estimate_ft_topic" value="/KUKA/FT"/>
+    
+    <param name="output_joints_topic" value="/KUKA/joint_cmd"/>
+    <param name="world_frame" value="/world_frame"/>
   </node>
 </launch>

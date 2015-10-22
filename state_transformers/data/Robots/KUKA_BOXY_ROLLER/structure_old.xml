@@ -21,9 +21,9 @@
 <Children>
 <Link> Calib
 
- <Joint type="None"> <!-- Torso joint for boxy is at 0 -->
+ <Joint type="None"> <!-- Torso joint for boxy is at -0.3 -->
         <BaseFrame>
-            <Origin> 0.212 -0.268 1.088</Origin>
+            <Origin> 0.237 -0.283 0.878</Origin>
             <Orient>  0.5 0.866 0
                       -0.433 0.25 -0.866
                       -0.7499 0.433 0.5 
@@ -146,9 +146,9 @@
 		<Link> TOOL
 	      <Joint type="None">
 		<BaseFrame>
-		  <Origin> 0.0 0.0 0.343 </Origin>
-		  <Orient> -0.7071  -0.7071  0.0 
-                           0.7071  -0.7071  0.0
+		  <Origin> 0.0 0.0 0.28 </Origin>
+		  <Orient>  1.0 0.0  0.0 
+                            0.0  1.0  0.0
                             0.0  0.0  1.0
 		  </Orient>
 		</BaseFrame>

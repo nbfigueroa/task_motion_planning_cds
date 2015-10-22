@@ -6,5 +6,6 @@
   	  <param name="world_frame" value="/base_link" />
 	  <param name="use_boxy_tool" value="true" />
 	  <param name="model_base_path" value="$(find motion_planner)../epfl-task-models/DoughRollingModels" />
+	  <param name="path_matlab_plot" value="/home/nbfigueroa/catkin_ws/src/lasa-dynamics-plotter/epfl-task-models-plot/DoughRollingModels/" />
   </node>
 </launch>

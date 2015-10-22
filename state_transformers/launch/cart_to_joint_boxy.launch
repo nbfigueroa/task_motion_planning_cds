@@ -14,9 +14,11 @@
     <param name="use_ft" value="false"/>
     <param name="orientation_ctrl" value="true"/>
     <param name="max_jvel_deg" value="30"/>
-    <param name="traj_tracking_gain" value="2"/>
+    <param name="traj_tracking_gain" value="10"/>
     <param name="force_tracking_gain" value="0.02"/>
     <param name="use_boxy" value="true"/>
+     <param name="simulation" value="true"/>
+
 
 	<!-- Communication -->
     <param name="input_joint_topic" value="/joint_states"/>
@@ -25,6 +27,7 @@
     <param name="input_stiff_topic" value="/cart_to_joint/des_ee_stiff"/>
     <param name="input_estimate_ft_topic" value="/joint_to_cart/est_ee_ft"/>
     <param name="output_joints_topic" value="/r_arm_vel/command"/>
-
+    <param name="world_frame" value="/base_link"/>
+	
   </node>
 </launch>
