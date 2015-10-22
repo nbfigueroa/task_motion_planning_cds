@@ -11,37 +11,35 @@ It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
 
 ###Installation Instructions:
 
-- Install robot-toolkit:
-```
-$ git clone https://github.com/epfl-lasa/robot-toolkit.git
-```
+  1. Install robot-toolkit:
+  ```
+  $ git clone https://github.com/epfl-lasa/robot-toolkit.git
+  ```
 
-- Install kuka_interface_packages:
-```
-$ git clone https://github.com/nbfigueroa/kuka_interface_packages.git
-```
-and don't forget to install motion_generators 
-```
-$ git clone https://github.com/epfl-lasa/motion-generators.git
-```
+  2. Install kuka_interface_packages:
+  ```
+  $ git clone https://github.com/nbfigueroa/kuka_interface_packages.git
+  ```
+  and don't forget to install motion_generators 
+  ```
+  $ git clone https://github.com/epfl-lasa/motion-generators.git
+  ```
 
-- Install kuka-rviz-simulation:
-```
-$ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
-```
-and don't forget to install all dependencies for package [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation).
+  3. Install kuka-rviz-simulation:
+  ```
+  $ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
+  ```
+  and don't forget to install all dependencies for package [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation).
 
-- Install coupled-dynamical-systems package:
+  4. Install coupled-dynamical-systems package:
+  ```
+  $ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
+  ```
 
-```
-$ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
-```
-
-- Finally, install task_motion_planning_cds package:
-
-```
-$ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
-```
+  5. Finally, install task_motion_planning_cds package:
+  ```
+  $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
+  ```
 
 ###Running a simulation for a Pouring task learned from Demonstration:
 
