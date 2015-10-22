@@ -44,6 +44,52 @@ It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
 ###Running a simulation for a Pouring task learned from Demonstration:
 
 
+#####ROBOT SIMULATOR
+
+Load Robot Simulator
+```
+$ roslaunch kuka_lwr_bringup lwr_simulation_viz.launch
+```
+
+#####VISUALIZATION
+
+Monitor robot states/vision/attractors
+```
+$ rosrun rviz rviz
+```
+
+#####CONTROL/MOTION PLANNING
+
+Joint to Cartesian Estimation
+```
+$ roslaunch state_transformers joint_to_cart_lasa_pour.launch 
+```
+
+Cartesian to Joint Estimation
+```
+$ roslaunch state_transformers cart_to_joint_lasa_sim_pour.launch 
+```
+
+Trajectory Generator
+  - For complete trajectory generation (open-loop):
+  ```
+  $ roslaunch motion_planner lasa_sim_fixed_pouring.launch
+  ```
+  
+  - For online trajectory generation (closed-loop with "simulated" robot controllers):
+  ```
+  $ roslaunch motion_planner lasa_fixed_pouring.launch
+  ```
+
+##### TASK PLANNING  
+Sub-Task Action Planner
+```
+$ rosrun lasa_action_planners pouring_demo_fixed_lasa.py
+```
+Follow the instructions on the commandline...
+
+
+
 ###References:
 
 [1] N. Figueroa and A. Billard, “Discovering hierarchical structure in heterogenous and sequential task demonstrations,” In preparation.
