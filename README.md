@@ -37,7 +37,7 @@ and don't forget to install all dependencies for package [kuka-rviz-simulation](
 $ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
 ```
 
-- Install task_motion_planning_cds package:
+- Finally, install task_motion_planning_cds package:
 
 ```
 $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
