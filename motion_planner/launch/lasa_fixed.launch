@@ -4,6 +4,6 @@
   	<param name="action_mode" value="lasa_fixed"/>
   	<param name="wait_for_force" value="true" />
   	<param name="world_frame" value="/world_frame" />
-	<param name="model_base_path" value="/home/nbfigueroa/dev/epfl-task-models/DoughRollingModels" />
+	<param name="model_base_path" value="$(find motion_planner)../epfl-task-models/DoughRollingModels" />
   </node>
 </launch>
