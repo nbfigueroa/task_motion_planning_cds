@@ -9,6 +9,43 @@ This research was conducted in the Learning Algorithms and Systems Laboratory (L
 
 It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
 
+###Installation Instructions:
+
+1. Install robot-toolkit:
+```
+$ git clone https://github.com/epfl-lasa/robot-toolkit.git
+```
+
+2. Install kuka_interface_packages:
+```
+$ git clone https://github.com/nbfigueroa/kuka_interface_packages.git
+```
+and don't forget to install motion_generators 
+```
+$ git clone https://github.com/epfl-lasa/motion-generators.git
+```
+
+3. Install kuka-rviz-simulation:
+```
+$ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
+```
+and don't forget to install all dependencies for package kuka-rviz-simulation (link here).
+
+4. Install coupled-dynamical-systems package:
+
+```
+$ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
+```
+
+5. Install task_motion_planning_cds package:
+
+```
+$ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
+```
+
+###Running a simulation for a Pouring task learned from Demonstration:
+
+
 ###References:
 
 [1] N. Figueroa and A. Billard, “Discovering hierarchical structure in heterogenous and sequential task demonstrations,” In preparation.
