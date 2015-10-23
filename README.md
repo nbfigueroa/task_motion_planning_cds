@@ -1,4 +1,4 @@
-## Task and Motion Planning with CDS Learned from Demonstations
+## Task and Motion Planning with CDS Learned from Demonstrations
 This repository includes the packages and instructions to run the LASA Motion planning architecture developed initially for a pizza dough rolling task within the Robohow project, but can be used for any task and any type of controller that outputs the desired command in task space (i.e. desired cartesian pose/ft/stiffness)
 
 ###Video of the architecture in action (click on image):
