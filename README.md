@@ -19,12 +19,12 @@ Following a brief run-through of the architecture:
   - **Motion planner:** Executes the requested action from the Action planner.This involves commanding the next desired state of the end-effector (pose, force/torque) using the currentstate of the end-effector and the parameters learned for the specifc action (i.e.  parameters of Coupled-Dynamical-System for pose control, parameters of probability distribution functionfor force/torque, stiffness profile) until the attractor/force is reached.
   - **EPFL  Task  Models:** These  are  text  files  that  contain  the  parameters  for  the  learnedaction/motion for each task.
   - **Cartesian to Joint State Transformer:** This module takes the desired end-effector com-mand (pose, force/torque) and converts it to joint velocities and stiffness.
-  - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controller.
+  - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controll*r.
 
-
+---
 ###Installation Instructions:
 
-**System Requirements:**
+##System Requirements:
 
 OS: Ubuntu 14.04
 
@@ -36,13 +36,13 @@ For **each package**, the user needs to do the following:
 ```
 $ cd /catkin_ws/src
 $ git clone <remote branch>
-```
+```#
 *Build:*
 ```
 $ cd /catkin_ws/
 $ catkin_make
 ```
-**Package list:** 
+##Package list:
   1. Install [robot-toolkit](https://github.com/epfl-lasa/robot-toolkit):
   ```
   $ git clone https://github.com/epfl-lasa/robot-toolkit.git
@@ -72,7 +72,7 @@ $ catkin_make
   ```
   $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
   ```
-  
+---  
 ###Running a simulation for a Pouring task learned from Demonstration:
 
 #####Robot Simulator
