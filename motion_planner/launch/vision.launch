@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="plan2ctrl" pkg="motion_planner" type="motion_planner" output="screen" respawn="false">
+	  <param name="action_mode" value="vision" />
+	  <param name="wait_for_force" value="true" />
+  	  <param name="world_frame" value="/base_link" />
+	  <param name="use_boxy_tool" value="true" />
+	  <param name="model_base_path" value="/home/nbfigueroa/catkin_ws/src/epfl-task-models/DoughRollingModels" />
+  </node>
+</launch>

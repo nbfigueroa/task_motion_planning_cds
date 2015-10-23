@@ -1,0 +1,21 @@
+#goal definition
+string action_type
+string action_name
+geometry_msgs/Transform object_frame
+geometry_msgs/Transform attractor_frame
+string force_gmm_id
+int32 timeout
+robohow_common_msgs/MotionPhase Phase
+float64 dt
+float64 threshold
+float64 height
+float64 force
+float64 speed
+string haptic_type
+float64 hyper_param
+---
+#result definition
+int32 success
+---
+#feedback
+float64 progress
