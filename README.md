@@ -39,7 +39,7 @@ $ git clone <remote branch>
 ```
 *Build:*
 ```
-$ cd /catkinws/
+$ cd /catkin_ws/
 $ catkinmake
 ```
 **Package list:** 
