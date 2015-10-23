@@ -24,25 +24,25 @@ Following a brief run-through of the architecture:
 
 ###Installation Instructions:
 
-  1. Install robot-toolkit:
+  1. Install [robot-toolkit](https://github.com/epfl-lasa/robot-toolkit):
   ```
   $ git clone https://github.com/epfl-lasa/robot-toolkit.git
   ```
 
-  2. Install kuka_interface_packages:
+  2. Install [kuka_interface_packages](https://github.com/nbfigueroa/kuka_interface_packages):
   ```
   $ git clone https://github.com/nbfigueroa/kuka_interface_packages.git
   ```
-  and don't forget to install motion_generators 
+  and don't forget to install [motion_generators](https://github.com/epfl-lasa/motion-generators) 
   ```
   $ git clone https://github.com/epfl-lasa/motion-generators.git
   ```
 
-  3. Install kuka-rviz-simulation:
+  3. Install [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation):
   ```
   $ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
   ```
-  and don't forget to install all dependencies for package [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation).
+  and don't forget to install all dependencies for this package.
 
   4. Install coupled-dynamical-systems package:
   ```
