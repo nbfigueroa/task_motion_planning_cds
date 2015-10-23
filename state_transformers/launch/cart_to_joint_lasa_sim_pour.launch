@@ -3,7 +3,8 @@
     
     <!-- Robot chain -->
     <param name="data_path" value="$(find state_transformers)/data"/>
-    <param name="robot_name" value="KUKA_LASA_BHAND"/>
+    <!-- param name="robot_name" value="KUKA_LASA_BHAND"/ -->
+    <param name="robot_name" value="KUKA_LASA_PTOOL"/>
     <param name="ee_link" value="TOOL"/>
     
     <!-- Controller parameters -->

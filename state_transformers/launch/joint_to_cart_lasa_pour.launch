@@ -2,7 +2,8 @@
   <node name="joint_to_cart" pkg="state_transformers" type="joint_to_cart_lasa" output="screen" respawn="false">
     
     <param name="data_path" value="$(find state_transformers)/data"/>
-    <param name="robot_name" value="KUKA_LASA_BHAND"/>
+    <!-- param name="robot_name" value="KUKA_LASA_BHAND"/ -->
+    <param name="robot_name" value="KUKA_LASA_PTOOL"/>
     <param name="ee_link" value="TOOL"/>
     <param name="negate_torque" value="false"/>
     <param name="singular_tol" value="0.1"/>
