@@ -77,7 +77,7 @@ $ catkin_make
   
 ---  
 
-###Running a simulation for a Pouring task learned from Demonstration:
+###Running a Simulation for a Pouring task:
 
 #####Robot Simulator
 ```
@@ -120,9 +120,15 @@ Trajectory Generator
 ```
 $ rosrun lasa_action_planners pouring_demo_fixed_lasa.py
 ```
-Follow the instructions on the commandline...
+then follow the instructions on the terminal of this node.
 
+---  
 
+###Running a Simulation for a Pouring task:
+
+Fill in once tested.
+
+---
 
 ###References:
 
