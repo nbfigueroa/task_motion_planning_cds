@@ -10,10 +10,7 @@ This research was conducted in the Learning Algorithms and Systems Laboratory (L
 It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
 
 ###Modular Architecture Description:
-
-Put Image Here
-
-![alt tag](https://cloud.githubusercontent.com/assets/761512/10681474/e18328ac-7929-11e5-807e-8ec27cfc9905.png)
+![alt tag](https://cloud.githubusercontent.com/assets/761512/10681561/a4dfd458-792a-11e5-973b-0c196fbf9277.png)
 
 Following a brief run-through of the architecture:
 
