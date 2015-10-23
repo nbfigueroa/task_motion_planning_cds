@@ -13,8 +13,8 @@
     <param name="max_ee_ft_norm" value="40"/>
     <param name="use_ft" value="false"/>
     <param name="orientation_ctrl" value="true"/>
-    <param name="max_jvel_deg" value="20"/>
-    <param name="traj_tracking_gain" value="2"/>
+    <param name="max_jvel_deg" value="40"/>
+    <param name="traj_tracking_gain" value="3"/>
     <param name="force_tracking_gain" value="0.02"/>
     <param name="use_boxy" value="false"/>
 

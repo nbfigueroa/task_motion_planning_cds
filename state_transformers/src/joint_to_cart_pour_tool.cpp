@@ -139,7 +139,6 @@ void sensorFTCallback(const geometry_msgs::WrenchStampedConstPtr& msg) {
 }
 
 void sendPose(tf::Pose& pose) {
-
 	msg_pose.header.stamp = ros::Time::now();
 
 	tf::Vector3 tmp = pose.getOrigin();
@@ -207,6 +206,9 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 			mRobot->setJoints(read_jpos);
 			mRobot->getEEPose(ee_pose);			
 
+			computeFT(ee_ft);
+			sendFT(ee_ft);
+			
 			//Use estimated FT of ee
 			if (simulation){
 				computeFT(ee_ft);
@@ -248,6 +250,7 @@ int main(int argc, char** argv) {
 	pub_pose = nh.advertise<geometry_msgs::PoseStamped>(output_cart_pose, 3);
 	pub_ft = nh.advertise<geometry_msgs::WrenchStamped>(output_cart_ft, 3);
 	ros::Subscriber sub = nh.subscribe<sensor_msgs::JointState>(input_joint_topic, 10, jointStateCallback,ros::TransportHints().tcpNoDelay());
+
 	// Uncomment to use FT Sensor for Boxy @ Bremen
 //	ros::Subscriber sub_ft = nh.subscribe<geometry_msgs::WrenchStamped>("/right_arm_ft_sensor/wrench", 10, sensorFTCallback, ros::TransportHints().tcpNoDelay());
 	// Uncommment to use FT Sensor for LWR4+ @ LASA

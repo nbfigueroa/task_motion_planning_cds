@@ -404,6 +404,7 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 
 // Callback for the desired cartesian pose
 void cartCallback(const geometry_msgs::PoseStampedConstPtr& msg) {
+	ROS_INFO_STREAM("Received Position Command");
 	const geometry_msgs::PoseStamped* data = msg.get();
 	des_ee_pose.setOrigin(tf::Vector3(data->pose.position.x,data->pose.position.y,data->pose.position.z));
 	des_ee_pose.setRotation(tf::Quaternion(data->pose.orientation.x,data->pose.orientation.y,data->pose.orientation.z,data->pose.orientation.w));
@@ -538,8 +539,10 @@ int main(int argc, char** argv) {
 
 
 	if(bUseIAI) {
+		ROS_INFO_STREAM("Using iai_control_msgs");
 		pub_joints = nh.advertise<iai_control_msgs::MultiJointVelocityImpedanceCommand>(output_joints_topic, 3);
 	} else {
+		ROS_INFO_STREAM("Joints states");
 		pub_joints = nh.advertise<sensor_msgs::JointState>(output_joints_topic, 3);
 	}
 

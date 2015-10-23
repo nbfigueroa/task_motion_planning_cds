@@ -289,6 +289,7 @@ protected:
 	// model_dt - you know
 	bool learned_model_execution(DoughTaskPhase phase, CDSController::DynamicsType masterType, CDSController::DynamicsType slaveType, double reachingThreshold, double model_dt, tf::Transform trans_obj, tf::Transform trans_att, std::string model_base_path, std::string force_gmm_id) {
 
+		reachingThreshold = 0.02;
 		ROS_INFO_STREAM(" Model Path "<<model_base_path);	
 		ROS_INFO_STREAM(" Learned model execution with phase "<<phase);
 		ROS_INFO_STREAM(" Reaching threshold "<<reachingThreshold);
@@ -714,6 +715,7 @@ public:
 
 			//TODO: update these from action
 			double reachingThreshold = 0.01, model_dt = 0.05;
+
 			//CDSController::DynamicsType masterType = CDSController::LINEAR_DYNAMICS;
 		    CDSController::DynamicsType masterType = CDSController::MODEL_DYNAMICS;
 			//CDSController::DynamicsType slaveType = CDSController::LINEAR_DYNAMICS;

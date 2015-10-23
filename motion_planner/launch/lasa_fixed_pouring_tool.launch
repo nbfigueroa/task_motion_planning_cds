@@ -5,8 +5,8 @@
   	<param name="simulation" value="false" />
   	<param name="world_frame" value="/world_frame" />
   	<param name="model_dt" value="0.01" />
-  	<param name="reachingThreshold" value="0.005" />
-  	<param name="orientationThreshold" value="0.02" />
+  	<param name="reachingThreshold" value="0.02" />
+  	<param name="orientationThreshold" value="0.2" />
 	<param name="model_base_path" value="$(find motion_planner)../epfl-task-models/PouringModels" />
 		  <param name="wait_for_force" value="false" />
   </node>
