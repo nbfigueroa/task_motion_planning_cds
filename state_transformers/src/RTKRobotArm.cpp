@@ -241,12 +241,12 @@ void RTKRobotArm::getIKJointVelocity(const Eigen::VectorXd& cart_vel, Eigen::Vec
 }
 void RTKRobotArm::copy(const Eigen::VectorXd& from, MathLib::Vector& to) {
 	for(int i=0; i<from.size(); ++i) {
-		to(i) = from(i);
+        to(i) = from(i);
 	}
 }
 void RTKRobotArm::copy(const MathLib::Vector& from, Eigen::VectorXd& to) {
 	for(int i=0; i<from.Size(); ++i) {
-		to(i) = from(i);
+        to(i) = from.At(i);
 	}
 }
 void RTKRobotArm::copy(const MathLib::Matrix& from, Eigen::MatrixXd& to) {
@@ -263,7 +263,7 @@ void RTKRobotArm::copy(const Eigen::MatrixXd& from, MathLib::Matrix& to) {
 	int c = from.cols();
 	for(int i=0; i<r; ++i) {
 		for(int j=0; j<c; ++j) {
-			to(i,j) = from(i,j);
+            to(i,j) = from(i,j);
 		}
 	}
 }
