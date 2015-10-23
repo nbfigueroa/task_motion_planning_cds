@@ -24,7 +24,7 @@ Following a brief run-through of the architecture:
 ---
 ###Installation Instructions:
 
-##System Requirements:
+####System Requirements:
 
 OS: Ubuntu 14.04
 
@@ -36,13 +36,13 @@ For **each package**, the user needs to do the following:
 ```
 $ cd /catkin_ws/src
 $ git clone <remote branch>
-```#
+```
 *Build:*
 ```
 $ cd /catkin_ws/
 $ catkin_make
 ```
-##Package list:
+####Package list:
   1. Install [robot-toolkit](https://github.com/epfl-lasa/robot-toolkit):
   ```
   $ git clone https://github.com/epfl-lasa/robot-toolkit.git
