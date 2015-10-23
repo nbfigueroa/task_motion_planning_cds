@@ -61,7 +61,7 @@ $ catkinmake
   ```
   $ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
   ```
-  and don't forget to install all dependencies for this package.
+  and don't forget to install all [dependencies](https://github.com/epfl-lasa/kuka-rviz-simulation) for this package.
 
   4. Install [coupled-dynamical-systems](https://github.com/epfl-lasa/coupled-dynamical-systems) package:
   ```
