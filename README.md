@@ -131,6 +131,12 @@ then follow the instructions on the terminal of this node.
 
 ###Real-Time Control of a Pouring task on the KUKA LWR @ LASA:
 
+
+#####Robot State Communication
+Bringup rtk mirror (a custome KUKA control bridge using FRI library) check instructions to run [here](https://github.com/nbfigueroa/kuka_interface_packages.git).
+```
+$ rosrun rtk_mirror run_lwr.sh
+```
 #####Real-time Robot Visualization
 ```
 $ roslaunch kuka_lwr_bringup lwr_realtime_viz.launch
