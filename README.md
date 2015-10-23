@@ -24,6 +24,25 @@ Following a brief run-through of the architecture:
 
 ###Installation Instructions:
 
+**System Requirements:**
+
+OS: Ubuntu 14.04
+
+ROS compatibility: Indigo
+
+For **each package**, the user needs to do the following:
+
+*Download:*
+```
+$ cd /catkin_ws/src
+$ git clone <remote branch>
+```
+*Build:*
+```
+$ cd /catkinws/
+$ catkinmake
+```
+**Package list:** 
   1. Install [robot-toolkit](https://github.com/epfl-lasa/robot-toolkit):
   ```
   $ git clone https://github.com/epfl-lasa/robot-toolkit.git
@@ -56,21 +75,17 @@ Following a brief run-through of the architecture:
   
 ###Running a simulation for a Pouring task learned from Demonstration:
 
-#####ROBOT SIMULATOR
-
-Load Robot Simulator
+#####Robot Simulator
 ```
 $ roslaunch kuka_lwr_bringup lwr_simulation_viz.launch
 ```
 
-#####VISUALIZATION
-
-Monitor robot states/vision/attractors
+#####Visualization
 ```
 $ rosrun rviz rviz
 ```
 
-#####CONTROL/MOTION PLANNING
+#####Control/Motion Planning
 
 Joint to Cartesian Estimation
 ```
@@ -93,8 +108,7 @@ Trajectory Generator
   $ roslaunch motion_planner lasa_fixed_pouring.launch
   ```
 
-##### ACTION PLANNING  
-Sub-Task Action Planner
+##### Action Planning  
 ```
 $ rosrun lasa_action_planners pouring_demo_fixed_lasa.py
 ```
