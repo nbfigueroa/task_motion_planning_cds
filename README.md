@@ -150,7 +150,7 @@ $ roslaunch state_transformers joint_to_cart_lasa_pour_tool.launch
 
 Cartesian to Joint Estimation
 ```
-$ roslaunch state_transformers cart_to_joint_lasa_sim_pour_tool.launch 
+$ roslaunch state_transformers cart_to_joint_lasa_pour_tool.launch 
 ```
 
 Trajectory Generator
