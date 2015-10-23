@@ -22,13 +22,15 @@ Following a brief run-through of the architecture:
   - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controll*r.
 
 ---
-###Installation Instructions:
+###Installation:
 
 ####System Requirements:
 
 OS: Ubuntu 14.04
 
 ROS compatibility: Indigo
+
+####Instructions:
 
 For **each package**, the user needs to do the following:
 
