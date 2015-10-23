@@ -102,12 +102,12 @@ Trajectory Generator
   ```
   $ roslaunch motion_planner lasa_sim_fixed_pouring.launch
   ```
-  
+  Expected simulation: http://bit.ly/1HA0Fj4
   - For online trajectory generation (closed-loop with "simulated" robot controllers):
   ```
   $ roslaunch motion_planner lasa_fixed_pouring.launch
   ```
-
+  Expected simulation: http://bit.ly/1CM6BTt
 ##### Action Planning  
 ```
 $ rosrun lasa_action_planners pouring_demo_fixed_lasa.py
