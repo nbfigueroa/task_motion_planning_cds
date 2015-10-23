@@ -77,7 +77,7 @@ $ catkin_make
   
 ---  
 
-###Running a Simulation for a Pouring task:
+###Simulation of a Pouring task in Rviz:
 
 #####Robot Simulator
 ```
@@ -124,7 +124,7 @@ then follow the instructions on the terminal of this node.
 
 ---  
 
-###Running a Simulation for a Pouring task:
+###Real-Time Control of a Pouring task on the KUKA LWR @ LASA:
 
 Fill in once tested.
 
