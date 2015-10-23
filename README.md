@@ -32,7 +32,7 @@ ROS compatibility: Indigo
 
 ####Instructions:
 
-For **each package**, the user needs to do the following:
+For **each package/repo** listed below, the user needs to do the following:
 
 *Download:*
 ```
