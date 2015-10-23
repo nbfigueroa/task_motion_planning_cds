@@ -40,7 +40,7 @@ $ git clone <remote branch>
 *Build:*
 ```
 $ cd /catkin_ws/
-$ catkinmake
+$ catkin_make
 ```
 **Package list:** 
   1. Install [robot-toolkit](https://github.com/epfl-lasa/robot-toolkit):
