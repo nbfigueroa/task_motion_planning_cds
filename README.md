@@ -14,12 +14,12 @@ It was funded by the EU Project ROBOHOW.COG. ----https://robohow.eu/
 
 Following a brief run-through of the architecture:
 
-  - **Action  planner:** The  action  planner  tells  theMotion  plannerwhich  learned  action  toexecute and the corresponding attractor obtained from the vision module (or fixed values insimulation).
-  - **Vision Module (dough/attractor detectors):** This is the vision module, which detects the attractors for each corresponding action in the   sequence or single action involved in the desired task.  (This module can be substituted by fixed values to facilitate simulation and fast integration of new components.)
+  - **Action  planner:** The  action  planner  tells  theMotion  planner which  learned  action  to execute and the corresponding attractor obtained from the vision module (or fixed values insimulation).
+  - **Vision Module (dough/attractor detectors):** This is the vision module, which detects the attractors for each corresponding action in the sequence or single action involved in the desired task.  (This module can be substituted by fixed values to facilitate simulation and fast integration of new components.)
   - **Motion planner:** Executes the requested action from the Action planner.This involves commanding the next desired state of the end-effector (pose, force/torque) using the currentstate of the end-effector and the parameters learned for the specifc action (i.e.  parameters of Coupled-Dynamical-System for pose control, parameters of probability distribution functionfor force/torque, stiffness profile) until the attractor/force is reached.
   - **EPFL  Task  Models:** These  are  text  files  that  contain  the  parameters  for  the  learnedaction/motion for each task.
   - **Cartesian to Joint State Transformer:** This module takes the desired end-effector com-mand (pose, force/torque) and converts it to joint velocities and stiffness.
-  - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controll*r.
+  - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controller.
 
 ---
 ###Installation:
