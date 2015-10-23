@@ -44,12 +44,12 @@ Following a brief run-through of the architecture:
   ```
   and don't forget to install all dependencies for this package.
 
-  4. Install coupled-dynamical-systems package:
+  4. Install [coupled-dynamical-systems](https://github.com/epfl-lasa/coupled-dynamical-systems) package:
   ```
   $ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
   ```
 
-  5. Finally, install task_motion_planning_cds package:
+  5. Finally, install [task_motion_planning_cds](https://github.com/nbfigueroa/task_motion_planning_cds) package:
   ```
   $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
   ```
