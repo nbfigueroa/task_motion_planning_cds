@@ -74,7 +74,9 @@ $ catkin_make
   ```
   $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
   ```
+  
 ---  
+
 ###Running a simulation for a Pouring task learned from Demonstration:
 
 #####Robot Simulator
