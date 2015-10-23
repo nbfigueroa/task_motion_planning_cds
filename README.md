@@ -22,7 +22,7 @@ Following a brief run-through of the architecture:
   - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controller.
   - 
   
-##Usage in your own projects:
+###Usage in your own projects:
 Using this **modular architecture**, one can easily simulate and test their own controllers and experiments. As the modules are not tied to each other, one can implement their own motion planner/policy controller and integrate it with a simulation or with a real robot with only using the corresponding topics, the state transformers/rtk_mirror will take care of the rest. 
 
 Also, if one chooses to use their own inverse kinematics/dynamics solvers on can send topics directly to the rtk_mirrror which works as a bridge to the KUKA control box. 
@@ -132,7 +132,39 @@ then follow the instructions on the terminal of this node.
 
 ###Real-Time Control of a Pouring task on the KUKA LWR @ LASA:
 
-Fill in once tested.
+#####Real-time Robot Visualization
+```
+$ roslaunch kuka_lwr_bringup lwr_realtime_viz.launch
+```
+
+#####Visualization
+```
+$ rosrun rviz rviz
+```
+
+#####Control/Motion Planning
+
+Joint to Cartesian Estimation
+```
+$ roslaunch state_transformers joint_to_cart_lasa_pour_tool.launch 
+```
+
+Cartesian to Joint Estimation
+```
+$ roslaunch state_transformers cart_to_joint_lasa_sim_pour_tool.launch 
+```
+
+Trajectory Generator
+```
+$ roslaunch motion_planner lasa_sim_fixed_pouring_tool.launch
+```
+
+  
+##### Action Planning  
+```
+$ rosrun lasa_action_planners pouring_tool_demo_fixed_lasa.py
+```
+then follow the instructions on the terminal of this node. Expected behavior: 
 
 ---
 
