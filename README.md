@@ -20,6 +20,12 @@ Following a brief run-through of the architecture:
   - **EPFL  Task  Models:** These  are  text  files  that  contain  the  parameters  for  the  learnedaction/motion for each task.
   - **Cartesian to Joint State Transformer:** This module takes the desired end-effector com-mand (pose, force/torque) and converts it to joint velocities and stiffness.
   - **Joint to Cartesian State Estimator:** This module estimates the end-effector pose and force/torque from the joint angle/torques provided by the low-level controller.
+  - 
+  
+##Usage in your own projects:
+Using this **modular architecture**, one can easily simulate and test their own controllers and experiments. As the modules are not tied to each other, one can implement their own motion planner/policy controller and integrate it with a simulation or with a real robot with only using the corresponding topics, the state transformers/rtk_mirror will take care of the rest. 
+
+Also, if one chooses to use their own inverse kinematics/dynamics solvers on can send topics directly to the rtk_mirrror which works as a bridge to the KUKA control box. 
 
 ---
 ###Installation:
