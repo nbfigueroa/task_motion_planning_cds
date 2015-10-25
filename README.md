@@ -83,6 +83,8 @@ $ catkin_make
 ---  
 
 ###Simulation of a Pouring task in Rviz:
+The models for this task were learned from demonstrations of sauce pouring as can be seen in the following video:
+[Sauce Pouring Demonstations](https://www.dropbox.com/s/3q809v8u8f7j2c8/PouringDemonstration.m4v?dl=0).
 
 #####Robot Simulator
 ```
