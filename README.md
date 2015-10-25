@@ -177,7 +177,9 @@ If the tool is not attached that robot can still follow the learned pouring traj
 
 ---
 ###Real-Time Control of a Pizza Dough Rolling task on the KUKA LWR @ LASA:
+
 Coming soon ...
+
 --- 
 ###References:
 
