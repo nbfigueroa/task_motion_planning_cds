@@ -93,6 +93,7 @@ $ roslaunch kuka_lwr_bringup lwr_simulation_viz.launch
 ```
 $ rosrun rviz rviz
 ```
+Once in rviz, followin the instructions in the [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation) package.
 
 #####Control/Motion Planning
 
