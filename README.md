@@ -172,7 +172,9 @@ $ rosrun lasa_action_planners pouring_tool_demo_fixed_lasa.py
 then follow the instructions on the terminal of this node. [Expected behavior](https://www.dropbox.com/s/fgxrk9lj5avlw0j/pour_demo.mp4?dl=0)
 
 ---
-
+###Real-Time Control of a Pizza Dough Rolling task on the KUKA LWR @ LASA:
+Coming soon ...
+--- 
 ###References:
 
 [1] N. Figueroa and A. Billard, “Discovering hierarchical structure in heterogenous and sequential task demonstrations,” In preparation.
