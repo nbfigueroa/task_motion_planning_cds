@@ -106,6 +106,8 @@ int main(int argc, char** argv) {
 	ros::Rate tr(rate);
 	while(ros::ok() && t <= total_time) {
 
+
+
 		// Linear interpolation between start and final position
 		curr_pos = (1-t/total_time)*start_pos + t/total_time*final_pos;
 
