@@ -13,6 +13,7 @@
     <param name="input_joint_topic" value="/joint_states"/>
     <param name="output_cart_pose" value="/joint_to_cart/est_ee_pose"/>
     <param name="output_cart_ft" value="/joint_to_cart/est_ee_ft"/>
+    
     <param name="world_frame" value="/world_frame"/>
 
   </node>
