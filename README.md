@@ -24,7 +24,7 @@ Following a brief run-through of the architecture:
 ###Usage in your own projects:
 Using this **modular architecture**, one can easily simulate and test their own controllers and experiments. As the modules are not tied to each other, one can implement their own motion planner/policy controller in task space and execute it on a simulation or on a real robot with only using the corresponding topics, the state transformers/simulator or kuka_fri_bridge will take care of the rest. An example of these module being used to simulate and control actions can be found in this package:  [kuka_planning_interface ](https://github.com/gpldecha/kuka_planning_interface )
 
-Also, if one chooses to use their own inverse kinematics/dynamics solvers on can send topics directly to the rtk_mirrror which works as a bridge to the KUKA control box. 
+Also, if one chooses to use their own inverse kinematics/dynamics solvers on can send topics directly to the kuka_fri_bridge which works as a bridge to the KUKA control box. 
 
 ---
 ###Installation:
