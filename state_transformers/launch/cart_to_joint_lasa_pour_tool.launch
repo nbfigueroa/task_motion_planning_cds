@@ -14,7 +14,7 @@
     <param name="max_ee_ft_norm" value="40"/>
     <param name="use_ft" value="false"/>
     <param name="orientation_ctrl" value="true"/>
-    <param name="max_jvel_deg" value="40"/>
+    <param name="max_jvel_deg" value="30"/>
     <param name="traj_tracking_gain" value="3"/>
     <param name="force_tracking_gain" value="0.02"/>
     <param name="use_boxy" value="false"/>
@@ -22,14 +22,18 @@
 
 
 	<!-- Communication -->
-    <param name="input_joint_topic" value="/joint_states"/>
+    <param name="input_joint_topic" value="/joint_states"/>    
+    
     <param name="input_pose_topic" value="/cart_to_joint/des_ee_pose"/>
-    <param name="input_ft_topic" value="/cart_to_joint/des_ee_ft"/>
+    <param name="input_ft_topic" value="/cart_to_joint/des_ee_ft"/>    
     <param name="input_stiff_topic" value="/cart_to_joint/des_ee_stiff"/>
+    
     <param name="input_estimate_pose_topic" value="/joint_to_cart/est_ee_pose"/>
-    <param name="input_estimate_ft_topic" value="/joint_to_cart/est_ee_ft"/>
+    <param name="input_estimate_ft_topic" value="/joint_to_cart/est_ee_ft"/>        
+    
+    
     <param name="output_joints_topic" value="/KUKA/joint_cmd"/>
-        <param name="world_frame" value="/world_frame"/>
+    <param name="world_frame" value="/world_frame"/>
   </node>
 
 </launch>

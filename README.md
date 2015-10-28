@@ -24,7 +24,7 @@ Following a brief run-through of the architecture:
 ###Usage in your own projects:
 Using this **modular architecture**, one can easily simulate and test their own controllers and experiments. As the modules are not tied to each other, one can implement their own motion planner/policy controller in task space and execute it on a simulation or on a real robot with only using the corresponding topics, the state transformers/simulator or kuka_fri_bridge will take care of the rest. An example of these module being used to simulate and control actions can be found in this package:  [kuka_planning_interface ](https://github.com/gpldecha/kuka_planning_interface )
 
-Also, if one chooses to use their own inverse kinematics/dynamics solvers on can send topics directly to the rtk_mirrror which works as a bridge to the KUKA control box. 
+Also, if one chooses to use their own inverse kinematics/dynamics solvers on can send topics directly to the kuka_fri_bridge which works as a bridge to the KUKA control box. 
 
 ---
 ###Installation:
@@ -83,8 +83,6 @@ $ catkin_make
 ---  
 
 ###Simulation of a Pouring task in Rviz:
-The models for this task were learned from demonstrations of sauce pouring as can be seen in the following video:
-[Sauce Pouring Demonstations](https://www.dropbox.com/s/3q809v8u8f7j2c8/PouringDemonstration.m4v?dl=0).
 
 #####Robot Simulator
 ```
@@ -171,9 +169,9 @@ $ roslaunch motion_planner lasa_sim_fixed_pouring_tool.launch
 ```
 $ rosrun lasa_action_planners pouring_tool_demo_fixed_lasa.py
 ```
-then follow the instructions on the terminal of this node. If you attach the same tool to the robot you can expect a behavior like this: [Learned Pouring Execution](https://www.dropbox.com/home?preview=PouringExecution_trajectory_based_2_iterations.wmv). 
+then follow the instructions on the terminal of this node.  
 
-If the tool is not attached that robot can still follow the learned pouring trajectories: [Pouring Trajectories](https://www.dropbox.com/s/fgxrk9lj5avlw0j/pour_demo.mp4?dl=0)
+The robot will then follow the learned pouring trajectories: [Pouring Trajectories](https://www.dropbox.com/s/fgxrk9lj5avlw0j/pour_demo.mp4?dl=0)
 
 ---
 ###Real-Time Control of a Pizza Dough Rolling task on the KUKA LWR @ LASA:
