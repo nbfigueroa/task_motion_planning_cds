@@ -353,7 +353,8 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 	}
 
 	// Add the cartesian velocities due to position and force errors and compute the joint_velocity
-	mRobot->getIKJointVelocity(vel_due_to_force+vel_due_to_pos, jvel);
+//	mRobot->getIKJointVelocity(vel_due_to_force+vel_due_to_pos, jvel);
+    mRobot->getIKJointVelocity(vel_due_to_pos, jvel);
 
 }
 
