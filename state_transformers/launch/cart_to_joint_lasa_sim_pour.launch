@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <launch>
   <node name="cart_to_joint" pkg="state_transformers" type="cart_to_joint_pour" output="screen" respawn="false">
     

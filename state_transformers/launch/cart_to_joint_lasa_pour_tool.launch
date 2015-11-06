@@ -32,7 +32,8 @@
     <param name="input_estimate_ft_topic" value="/joint_to_cart/est_ee_ft"/>        
     
     
-    <param name="output_joints_topic" value="/KUKA/joint_cmd"/>
+    <!-- <param name="output_joints_topic" value="/KUKA/joint_cmd"/> -->
+    <param name="output_joints_topic" value="/KUKA/joint_imp_cmd"/>
     <param name="world_frame" value="/world_frame"/>
   </node>
 

@@ -2,11 +2,13 @@
 <launch>
 
 
-  <arg name="robot_name"           default="KUKA_LASA_ROLLER"/>
-  <arg name="ee_link" 	   	   default="TOOL"/>
-  <arg name="use_boxy"             default="true"/>
+  <arg name="robot_name"                     default="KUKA_LASA_ROLLER"/>
+  <arg name="ee_link" 	   	                 default="TOOL"/>
+  <arg name="use_boxy"                       default="true"/>
+  <arg name="cart_to_joint_type"             default="cart_to_joint_lasa_pour"/>
+  <arg name="output_joints_topic"            default="/KUKA/joint_imp_cmd"   /> 
 
-  <node name="cart_to_joint" pkg="state_transformers" type="cart_to_joint_pour" output="screen" respawn="false">
+  <node name="cart_to_joint" pkg="state_transformers" type="$(arg cart_to_joint_type)" output="screen" respawn="false">
 
     <!-- Robot chain -->
     <param name="data_path"  			value="$(find state_transformers)/data"/>
@@ -34,7 +36,7 @@
     <param name="input_stiff_topic" 		value="/cart_to_joint/des_ee_stiff"/>
     <param name="input_estimate_pose_topic" 	value="/joint_to_cart/est_ee_pose"/>
     <param name="input_estimate_ft_topic" 	value="/joint_to_cart/est_ee_ft"/>
-    <param name="output_joints_topic" 		value="/r_arm_vel/command"/>
+    <param name="output_joints_topic" 		value="$(arg output_joints_topic)"/>
     <param name="world_frame" 			value="/world_frame"/>
   </node>
 

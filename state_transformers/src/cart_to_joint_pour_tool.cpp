@@ -26,6 +26,7 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/WrenchStamped.h"
 #include "sensor_msgs/JointState.h"
+#include "kuka_fri_bridge/JointStateImpedance.h"
 #include "iai_control_msgs/MultiJointVelocityImpedanceCommand.h"
 #include "tf/LinearMath/Quaternion.h"
 #include <tf/tf.h>
@@ -34,6 +35,7 @@
 #include <Eigen/Core>
 #include <signal.h>
 #include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
 
 #define DEFAULT_JSTIFF 		200
 #define DEFAULT_JDAMP		0.7
@@ -48,7 +50,7 @@ std::string input_pose_topic, input_ft_topic, input_stiff_topic, input_joint_top
 int nEndEffectorId, numdof, rate;
 char buf[255];
 volatile bool isJointOkay, isFTOkay, isAllOkay, shut;
-bool bOrientCtrl, bUseForce, bUseIAI, simulation;
+bool bOrientCtrl, bUseForce, bUseIAI, simulation, bJointAction (false), bPosCommand(false);
 double reach_tol, ft_tol, force_tracking_gain, traj_tracking_gain, max_ee_ft_norm;
 
 Eigen::VectorXd  joint_vel, joint_stiff, joint_damp;
@@ -62,7 +64,8 @@ RobotArm* mRobot;
 
 ros::Publisher pub_joints;
 
-sensor_msgs::JointState msg_vel_stiff_jstate;
+//sensor_msgs::JointState msg_vel_stiff_jstate;
+kuka_fri_bridge::JointStateImpedance msg_vel_stiff_jstate;
 iai_control_msgs::MultiJointVelocityImpedanceCommand msg_vel_stiff_iai;
 
 // Boolean for detecting Ctrl-C
@@ -391,11 +394,18 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 	} else {
 		isJointOkay = true;
 
-		if(isAllOkay) {
+        if(isAllOkay) {
 			// All OK. Compute and send joint velocity		        
 			computeJointImpedance(joint_stiff, joint_damp);
 			computeJointVelocity(joint_vel);
-			sendJointMessage(joint_vel, joint_stiff, joint_damp);
+            if(!bJointAction){
+                sendJointMessage(joint_vel, joint_stiff, joint_damp);
+                bJointAction = false;
+                bPosCommand = false;
+            }
+            else
+                ROS_WARN("Base Joint Action controlling robot, NOT SENDING JOINT COMMAND");
+
 		}
 		else
 			ROS_WARN_STREAM_THROTTLE(1, "Not computing Joint Velocities");
@@ -410,6 +420,7 @@ void cartCallback(const geometry_msgs::PoseStampedConstPtr& msg) {
 	des_ee_pose.setRotation(tf::Quaternion(data->pose.orientation.x,data->pose.orientation.y,data->pose.orientation.z,data->pose.orientation.w));
 
 	ROS_INFO_STREAM_THROTTLE(1, "Received Position: "<<des_ee_pose.getOrigin().x()<<","<<des_ee_pose.getOrigin().y()<<","<<des_ee_pose.getOrigin().z());
+
 	if(bOrientCtrl) {
 		tf::Quaternion q = des_ee_pose.getRotation();
 		ROS_INFO_STREAM_THROTTLE(1, "Received Orientation: "<<q.x()<<","<<q.y()<<","<<q.z()<<","<<q.w());
@@ -474,14 +485,18 @@ void actionStateCallback(const std_msgs::String::ConstPtr& msg)
 }
 
 
+void jointActionCallback(const std_msgs::Bool::ConstPtr& msg)
+{
+        bJointAction = msg->data;
+}
+
+
 int main(int argc, char** argv) {
 
-//	ros::init(argc, argv, "cart_to_joint", ros::init_options::NoSigintHandler);
+
 	ros::init(argc, argv, "cart_to_joint");
 	ros::NodeHandle nh;
 	ros::NodeHandle _nh("~");
-//	shut = false;
-//	signal(SIGINT, handler);
 
 
 	if(!parseParams(_nh)) {
@@ -543,7 +558,8 @@ int main(int argc, char** argv) {
 		pub_joints = nh.advertise<iai_control_msgs::MultiJointVelocityImpedanceCommand>(output_joints_topic, 3);
 	} else {
 		ROS_INFO_STREAM("Joints states");
-		pub_joints = nh.advertise<sensor_msgs::JointState>(output_joints_topic, 3);
+//		pub_joints = nh.advertise<sensor_msgs::JointState>(output_joints_topic, 3);
+        pub_joints = nh.advertise<kuka_fri_bridge::JointStateImpedance>(output_joints_topic, 3);
 	}
 
 	ros::Subscriber sub_pos = nh.subscribe<geometry_msgs::PoseStamped>(input_pose_topic, 1, cartCallback, ros::TransportHints().tcpNoDelay());
@@ -551,7 +567,8 @@ int main(int argc, char** argv) {
 	ros::Subscriber sub_stiff = nh.subscribe<geometry_msgs::WrenchStamped>(input_stiff_topic, 1, stiffnessCallback, ros::TransportHints().tcpNoDelay());
 	ros::Subscriber sub_est_ft = nh.subscribe<geometry_msgs::WrenchStamped>(input_estimate_ft_topic, 1, estFTCallback, ros::TransportHints().tcpNoDelay());
 	ros::Subscriber sub_jstate = nh.subscribe<sensor_msgs::JointState>(input_joint_topic, 1, jointStateCallback, ros::TransportHints().tcpNoDelay());
-        ros::Subscriber sub = nh.subscribe("Action_State", 1, actionStateCallback, ros::TransportHints().tcpNoDelay());
+    ros::Subscriber sub = nh.subscribe("Action_State", 1, actionStateCallback, ros::TransportHints().tcpNoDelay());
+    ros::Subscriber sub_ja = nh.subscribe<std_msgs::Bool>("joint_action", 1, jointActionCallback, ros::TransportHints().tcpNoDelay());
 
 
 	joint_vel.resize(numdof); joint_stiff.resize(numdof), joint_damp.resize(numdof);

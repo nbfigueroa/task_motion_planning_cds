@@ -4,11 +4,12 @@
 
   <arg name="robot_name"           default="KUKA_LASA_ROLLER"	/>
   <arg name="ee_link" 	   	   default="TOOL"		/>
-  <arg name="negate_torque" 	   default="false"		/>
-  <arg name="singular_tol"         default="0.1"		/>
+  <arg name="negate_torque" 	         default="false"		/>
+  <arg name="singular_tol"              default="0.1"		/>
+  <arg name="joint_to_cart_type"         default="joint_to_cart_lasa"    />
 
 
-  <node name="joint_to_cart" pkg="state_transformers" type="joint_to_cart_lasa" output="screen" respawn="false">
+  <node name="joint_to_cart" pkg="state_transformers" type="$(arg joint_to_cart_type)" output="screen" respawn="false">
     
     <param name="data_path" 		value="$(find state_transformers)/data"	/>
     <param name="robot_name" 		value="$(arg robot_name)"		/>

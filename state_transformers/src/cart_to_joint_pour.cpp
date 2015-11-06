@@ -47,7 +47,7 @@ std::string input_pose_topic, input_ft_topic, input_stiff_topic, input_joint_top
 int nEndEffectorId, numdof, rate;
 char buf[255];
 volatile bool isJointOkay, isFTOkay, isAllOkay, shut;
-bool bOrientCtrl, bUseForce, bUseIAI;
+bool bOrientCtrl, bUseForce, bUseIAI, bReceivedPosition (false);
 double reach_tol, ft_tol, force_tracking_gain, traj_tracking_gain, max_ee_ft_norm;
 
 Eigen::VectorXd  joint_vel, joint_stiff, joint_damp;
@@ -118,7 +118,7 @@ bool parseParams(const ros::NodeHandle& n) {
 	if(!n.getParam("orientation_ctrl", bOrientCtrl)) {
 		bOrientCtrl = false;
 	}
-	ROS_INFO_STREAM("Orientation control: "<<bOrientCtrl);
+    ROS_INFO_STREAM("Orientation control: "<<bOrientCtrl);
 
 	if(!n.getParam("reach_tol", reach_tol)) {
 		reach_tol = DEFAULT_REACH_TOL;
@@ -240,7 +240,6 @@ void computeJointVelocity(Eigen::VectorXd& jvel) {
 		return;
 	}
 
-//	tf::Pose curr_ee_pose;
 	mRobot->setJoints(read_jpos);
 	mRobot->getEEPose(curr_ee_pose);
 
@@ -353,11 +352,14 @@ void jointStateCallback(const sensor_msgs::JointStateConstPtr& msg) {
 	} else {
 		isJointOkay = true;
 
-		if(isAllOkay) {
+        if(isAllOkay) {
 			// All OK. Compute and send joint velocity
 			computeJointImpedance(joint_stiff, joint_damp);
 			computeJointVelocity(joint_vel);
-			sendJointMessage(joint_vel, joint_stiff, joint_damp);
+            if(bReceivedPosition){
+                sendJointMessage(joint_vel, joint_stiff, joint_damp);
+                bReceivedPosition = false;
+            }
 		}
 	}
 }
@@ -369,6 +371,7 @@ void cartCallback(const geometry_msgs::PoseStampedConstPtr& msg) {
 	des_ee_pose.setRotation(tf::Quaternion(data->pose.orientation.x,data->pose.orientation.y,data->pose.orientation.z,data->pose.orientation.w));
 
 	ROS_INFO_STREAM_THROTTLE(1, "Received Position: "<<des_ee_pose.getOrigin().x()<<","<<des_ee_pose.getOrigin().y()<<","<<des_ee_pose.getOrigin().z());
+    bReceivedPosition = true;
 	if(bOrientCtrl) {
 		tf::Quaternion q = des_ee_pose.getRotation();
 		ROS_INFO_STREAM_THROTTLE(1, "Received Orientation: "<<q.x()<<","<<q.y()<<","<<q.z()<<","<<q.w());
