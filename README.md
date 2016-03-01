@@ -50,39 +50,26 @@ $ cd /catkin_ws/
 $ catkin_make
 ```
 ####Package list:
-  1. Install [robot-toolkit](https://github.com/epfl-lasa/robot-toolkit):
-  ```
-  $ git clone https://github.com/epfl-lasa/robot-toolkit.git
-  ```
-
-  2. Install [kuka_interface_packages](https://github.com/nbfigueroa/kuka_interface_packages):
-  ```
-  $ git clone https://github.com/nbfigueroa/kuka_interface_packages.git
-  ```
-  and don't forget to install [motion_generators](https://github.com/epfl-lasa/motion-generators) 
-  ```
-  $ git clone https://github.com/epfl-lasa/motion-generators.git
-  ```
-
-  3. Install [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation):
+  1. [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation):
   ```
   $ git clone https://github.com/epfl-lasa/kuka-rviz-simulation.git
   ```
   and don't forget to install all [dependencies](https://github.com/epfl-lasa/kuka-rviz-simulation) for this package.
+  
+  2. If not already installed, [kuka_interface_packages](https://github.com/nbfigueroa/kuka_interface_packages):
+  ```
+  $ git clone https://github.com/nbfigueroa/kuka_interface_packages.git
+  ```
+  and don't forget to install all [dependencies](https://github.com/nbfigueroa/kuka_interface_packages) for this package.
 
-  4. Install [coupled-dynamical-systems](https://github.com/epfl-lasa/coupled-dynamical-systems) package:
+  3. Install [coupled-dynamical-systems](https://github.com/epfl-lasa/coupled-dynamical-systems) package:
   ```
   $ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
   ```
   
-  5. Install [state-transfomers](https://github.com/epfl-lasa/state-transformers) package:
+  4. Install [state-transfomers](https://github.com/epfl-lasa/state-transformers) package:
   ```
   $ git clone https://github.com/epfl-lasa/state-transformers
-  ```
-  
-  6. Finally, install [task_motion_planning_cds](https://github.com/nbfigueroa/task_motion_planning_cds) package:
-  ```
-  $ git clone -b bare https://github.com/nbfigueroa/task_motion_planning_cds.git
   ```
   
 ---  
