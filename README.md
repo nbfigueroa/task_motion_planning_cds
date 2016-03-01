@@ -94,15 +94,8 @@ $ catkin_make
 $ roslaunch kuka_lwr_bringup lwr_simulation_viz.launch
 ```
 
-#####Visualization
-```
-$ rosrun rviz rviz
-```
-Once in rviz, follow the instructions in the [kuka-rviz-simulation](https://github.com/epfl-lasa/kuka-rviz-simulation) README.
 
 #####Control/Motion Planning
-
-
 Cartesian-to-Joint/Joint-to-Cart Estimation
 ```
 $ roslaunch state_transformers pouring_ctrls_sim.launch
