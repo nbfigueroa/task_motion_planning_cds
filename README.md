@@ -137,13 +137,7 @@ $ rosrun kuka_fri_bridge run_lwr.sh
 $ roslaunch kuka_lwr_bringup lwr_realtime_viz.launch
 ```
 
-#####Visualization
-```
-$ rosrun rviz rviz
-```
-
 #####Control/Motion Planning
-
 Cartesian-to-Joint/Joint-to-Cart Estimation
 ```
 $ roslaunch state_transformers pouring_ctrls_real.launch
