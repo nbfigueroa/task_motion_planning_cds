@@ -74,10 +74,13 @@ $ catkin_make
   ```
   $ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
   ```
-
-  5. Finally, install [task_motion_planning_cds](https://github.com/nbfigueroa/task_motion_planning_cds) package:
+  5. Install [coupled-dynamical-systems](https://github.com/epfl-lasa/coupled-dynamical-systems) package:
   ```
-  $ git clone https://github.com/nbfigueroa/task_motion_planning_cds.git
+  $ git clone https://github.com/epfl-lasa/state-transformers
+  ```
+  6. Finally, install [task_motion_planning_cds](https://github.com/nbfigueroa/task_motion_planning_cds) package:
+  ```
+  $ git clone -b bare https://github.com/nbfigueroa/task_motion_planning_cds.git
   ```
   
 ---  
@@ -97,17 +100,13 @@ Once in rviz, follow the instructions in the [kuka-rviz-simulation](https://gith
 
 #####Control/Motion Planning
 
-Joint to Cartesian Estimation
+
+Cartesian-to-Joint/Joint-to-Cart Estimation
 ```
-$ roslaunch state_transformers joint_to_cart_lasa_pour.launch 
+$ roslaunch state_transformers pouring_ctrls_sim.launch
 ```
 
-Cartesian to Joint Estimation
-```
-$ roslaunch state_transformers cart_to_joint_lasa_sim_pour.launch 
-```
-
-Trajectory Generator
+Cartesian Trajectory Generator
   - For complete trajectory generation (open-loop):
   ```
   $ roslaunch motion_planner lasa_sim_fixed_pouring.launch
@@ -150,17 +149,12 @@ $ rosrun rviz rviz
 
 #####Control/Motion Planning
 
-Joint to Cartesian Estimation
+Cartesian-to-Joint/Joint-to-Cart Estimation
 ```
-$ roslaunch state_transformers joint_to_cart_lasa_pour_tool.launch 
-```
-
-Cartesian to Joint Estimation
-```
-$ roslaunch state_transformers cart_to_joint_lasa_pour_tool.launch 
+$ roslaunch state_transformers pouring_ctrls_real.launch
 ```
 
-Trajectory Generator
+Cartesian Trajectory Generator
 ```
 $ roslaunch motion_planner lasa_sim_fixed_pouring_tool.launch
 ```
