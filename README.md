@@ -157,9 +157,8 @@ then follow the instructions on the terminal of this node.
 The robot will then follow the learned pouring trajectories: [Pouring Trajectories](https://www.dropbox.com/s/fgxrk9lj5avlw0j/pour_demo.mp4?dl=0)
 
 ---
-###Real-Time Control of a Pizza Dough Rolling task on the KUKA LWR @ LASA:
+###Simulation of a Bi-manual reach with independent CDS for each arm:
 
-Coming soon ...
 
 --- 
 ###References:
