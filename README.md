@@ -78,7 +78,7 @@ $ catkin_make
 
 #####Robot Simulator
 ```
-$ roslaunch kuka_lwr_bringup lwr_simulation_viz.launch
+$ roslaunch kuka_lwr_bringup lwr_simulation.launch
 ```
 
 
