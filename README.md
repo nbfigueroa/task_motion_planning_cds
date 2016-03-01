@@ -74,10 +74,12 @@ $ catkin_make
   ```
   $ git clone https://github.com/epfl-lasa/coupled-dynamical-systems.git
   ```
-  5. Install [coupled-dynamical-systems](https://github.com/epfl-lasa/coupled-dynamical-systems) package:
+  
+  5. Install [state-transfomers](https://github.com/epfl-lasa/state-transformers) package:
   ```
   $ git clone https://github.com/epfl-lasa/state-transformers
   ```
+  
   6. Finally, install [task_motion_planning_cds](https://github.com/nbfigueroa/task_motion_planning_cds) package:
   ```
   $ git clone -b bare https://github.com/nbfigueroa/task_motion_planning_cds.git
